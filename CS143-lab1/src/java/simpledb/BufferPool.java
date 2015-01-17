@@ -83,7 +83,7 @@ public class BufferPool {
 		{
 			if( cachedPages.size() >= numPages ) // buffer pool is full
 			{
-				throw DbException;
+				throw new DbException("buffer pool is full");
 			}
 			else // read page from disk and add to buffer pool's cachedPages
 			{

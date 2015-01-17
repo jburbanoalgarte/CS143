@@ -68,7 +68,8 @@ public class HeapPageId implements PageId {
 			return false;
 		if( this.getClass() != o.getClass() )
 			return false;
-		return ( ( this.getTableId() == o.getTableId() ) && ( this.pageNumber() == o.pageNumber() ) );
+		PageId pid = (PageId) o;
+		return ( ( this.getTableId() == pid.getTableId() ) && ( this.pageNumber() == pid.pageNumber() ) );
     }
 
     /**
