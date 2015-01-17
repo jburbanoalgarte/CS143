@@ -74,10 +74,10 @@ public class BufferPool {
     public  Page getPage(TransactionId tid, PageId pid, Permissions perm)
         throws TransactionAbortedException, DbException {
         // some code goes here
-		int cachedPages_key = pid.hashCode();
-		if( cachedPages.containsKey(cachedPages_key) )
+		int cachedPagesKey = pid.hashCode();
+		if( cachedPages.containsKey(cachedPagesKey) )
 		{
-			return cachedPages.get(cachedPages_key);
+			return cachedPages.get(cachedPagesKey);
 		}
 		else
 		{
@@ -90,7 +90,7 @@ public class BufferPool {
 				int tableId = pid.getTableId();
 				// use page's tableId to get corresponding DbFile from Catalog; then read desired page
 				Page thePage = Database.getCatalog().getDatabaseFile( tableId ).readPage(pid);
-				cachedPages.put( cachedPages_key, thePage);
+				cachedPages.put( cachedPagesKey, thePage);
 				return thePage;
 			}
 		}
@@ -224,5 +224,5 @@ public class BufferPool {
         // some code goes here
         // not necessary for lab1
     }
-
+	
 }
