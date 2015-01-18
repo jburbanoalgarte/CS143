@@ -15,6 +15,11 @@ import java.util.*;
  */
 public class HeapFile implements DbFile {
 
+	/*
+	*/
+	private File f;
+	private TupleDesc td;
+
     /**
      * Constructs a heap file backed by the specified file.
      * 
@@ -24,6 +29,8 @@ public class HeapFile implements DbFile {
      */
     public HeapFile(File f, TupleDesc td) {
         // some code goes here
+		this.f = f;
+		this.td = td;
     }
 
     /**
@@ -33,7 +40,8 @@ public class HeapFile implements DbFile {
      */
     public File getFile() {
         // some code goes here
-        return null;
+        //return null;
+		return this.f;
     }
 
     /**
@@ -47,7 +55,8 @@ public class HeapFile implements DbFile {
      */
     public int getId() {
         // some code goes here
-        throw new UnsupportedOperationException("implement this");
+        //throw new UnsupportedOperationException("implement this");
+		return this.getFile().getAbsoluteFile().hashCode();
     }
 
     /**
@@ -57,13 +66,37 @@ public class HeapFile implements DbFile {
      */
     public TupleDesc getTupleDesc() {
         // some code goes here
-        throw new UnsupportedOperationException("implement this");
+        //throw new UnsupportedOperationException("implement this");
+		return this.td;
     }
 
     // see DbFile.java for javadocs
     public Page readPage(PageId pid) {
         // some code goes here
-        return null;
+        //return null;
+		int pageNo = pid.pageNumber();
+		int pageSize = BufferPool.PAGE_SIZE;
+		
+		try
+		{
+			RandomAccessFile raf = new RandomAccessFile(this.getFile(), "r");
+		
+			byte data [] = new byte [pageSize];
+			
+			Integer posInt = new Integer(pageNo*pageSize);
+			Long pos = posInt.longValue();
+			
+			raf.seek(pos);			
+			raf.read(data);
+			
+			HeapPageId hpid = (HeapPageId) pid;
+			HeapPage thePage = new HeapPage(hpid, data);
+			return thePage;
+		} catch(Exception e)
+		{
+			throw new IllegalArgumentException();
+		}
+		
     }
 
     // see DbFile.java for javadocs
@@ -77,7 +110,12 @@ public class HeapFile implements DbFile {
      */
     public int numPages() {
         // some code goes here
-        return 0;
+        //return 0;		
+		long numBytes = f.length();
+		Long numPagesLong = new Long( numBytes / BufferPool.PAGE_SIZE );
+		Double numPagesDouble = numPagesLong.doubleValue();
+		Double numPages = new Double( Math.ceil( numPagesDouble ) );
+		return numPages.intValue();
     }
 
     // see DbFile.java for javadocs

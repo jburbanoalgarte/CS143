@@ -67,7 +67,9 @@ public class HeapPage implements Page {
     */
     private int getNumTuples() {        
         // some code goes here
-        return 0;
+        //return 0;
+		Double numTuplesDouble = new Double( Math.floor( ( 8.0*BufferPool.PAGE_SIZE ) / ( 8*this.td.getSize() + 1 ) ) );
+		return numTuplesDouble.intValue();
 
     }
 
@@ -78,7 +80,9 @@ public class HeapPage implements Page {
     private int getHeaderSize() {        
         
         // some code goes here
-        return 0;
+        //return 0;
+		Double headerSizeDouble = new Double( this.getNumTuples() / 8.0 );
+		return headerSizeDouble.intValue();
                  
     }
     
@@ -112,7 +116,8 @@ public class HeapPage implements Page {
      */
     public HeapPageId getId() {
     // some code goes here
-    throw new UnsupportedOperationException("implement this");
+    //throw new UnsupportedOperationException("implement this");
+		return this.pid;
     }
 
     /**
@@ -282,7 +287,14 @@ public class HeapPage implements Page {
      */
     public int getNumEmptySlots() {
         // some code goes here
-        return 0;
+        //return 0;
+		int numEmptySlots = 0;
+		for (int i=0; i < this.getNumTuples(); i++)
+		{
+			if( !this.isSlotUsed(i) )
+				numEmptySlots++;
+		}
+		return numEmptySlots;
     }
 
     /**
@@ -290,7 +302,11 @@ public class HeapPage implements Page {
      */
     public boolean isSlotUsed(int i) {
         // some code goes here
-        return false;
+        //return false;
+		Double indexDouble = new Double( Math.floor( i / 8.0 ) );
+		int index = indexDouble.intValue();
+		int shift = i % 8;
+		return ( ( header[index] >> shift ) & 1 ) == 1;
     }
 
     /**
@@ -307,7 +323,16 @@ public class HeapPage implements Page {
      */
     public Iterator<Tuple> iterator() {
         // some code goes here
-        return null;
+        //return null;
+		List<Tuple> tuplesUsedSlots = new ArrayList<Tuple>();
+		for( int i = 0; i < this.getNumTuples(); i++ )
+		{
+			if( this.isSlotUsed(i) )
+			{
+				tuplesUsedSlots.add( tuples[i] );
+			}//end if
+		}//end for
+		return tuplesUsedSlots.iterator();
     }
 
 }
