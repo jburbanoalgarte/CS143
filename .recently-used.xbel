@@ -3,15 +3,26 @@
       xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks"
       xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info"
 >
-  <bookmark href="file:///home/jordi/CS143-lab1/src/java/simpledb/HeapPageId.java" added="2015-01-17T22:14:42Z" modified="2015-01-17T22:14:42Z" visited="2015-01-17T22:14:42Z">
+  <bookmark href="file:///media/VBOXADDITIONS_4.3.12_93733/64Bit/Readme.txt" added="2015-01-11T07:23:42Z" modified="2015-01-11T07:23:48Z" visited="2015-01-11T07:23:42Z">
     <info>
       <metadata owner="http://freedesktop.org">
-        <mime:mime-type type="text/x-java"/>
+        <mime:mime-type type="text/plain"/>
         <bookmark:groups>
           <bookmark:group>gedit</bookmark:group>
         </bookmark:groups>
         <bookmark:applications>
-          <bookmark:application name="gedit" exec="&apos;gedit %u&apos;" modified="2015-01-17T22:14:42Z" count="1"/>
+          <bookmark:application name="File Manager" exec="&apos;gedit %U&apos;" modified="2015-01-11T07:23:42Z" count="1"/>
+          <bookmark:application name="gedit" exec="&apos;gedit %u&apos;" modified="2015-01-11T07:23:48Z" count="1"/>
+        </bookmark:applications>
+      </metadata>
+    </info>
+  </bookmark>
+  <bookmark href="file:///media/VBOXADDITIONS_4.3.12_93733" added="2015-01-14T19:25:59Z" modified="2015-01-14T19:25:59Z" visited="2015-01-14T19:25:59Z">
+    <info>
+      <metadata owner="http://freedesktop.org">
+        <mime:mime-type type="application/octet-stream"/>
+        <bookmark:applications>
+          <bookmark:application name="File Manager" exec="&apos;nautilus-autorun-software %u&apos;" modified="2015-01-14T19:25:59Z" count="1"/>
         </bookmark:applications>
       </metadata>
     </info>
