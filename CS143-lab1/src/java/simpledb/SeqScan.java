@@ -45,7 +45,8 @@ public class SeqScan implements DbIterator {
      *       be the actual name of the table in the catalog of the database
      * */
     public String getTableName() {
-        return null;
+        //return null;
+    	return Database.getCatalog().getTableName(tableid);
     }
     
     /**
@@ -84,6 +85,7 @@ public class SeqScan implements DbIterator {
     public void open() throws DbException, TransactionAbortedException {
         // some code goes here
     	iter = Database.getCatalog().getDatabaseFile(tableid).iterator(tid);
+    	iter.open();
     }
 
     /**
