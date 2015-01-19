@@ -48,6 +48,7 @@ public class HeapPageId implements PageId {
     public int hashCode() {
         // some code goes here
         //throw new UnsupportedOperationException("implement this");
+    	
 		String tidString = Integer.toString( this.getTableId() );
 		String pgNoString = Integer.toString( this.pageNumber() );
 		String concat = tidString + pgNoString;
@@ -69,7 +70,7 @@ public class HeapPageId implements PageId {
 		if( this.getClass() != o.getClass() )
 			return false;
 		PageId pid = (PageId) o;
-		return ( ( this.getTableId() == pid.getTableId() ) && ( this.pageNumber() == pid.pageNumber() ) );
+		return this.hashCode() == pid.hashCode();
     }
 
     /**

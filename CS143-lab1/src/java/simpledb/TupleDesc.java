@@ -64,15 +64,11 @@ public class TupleDesc implements Serializable {
     public TupleDesc(Type[] typeAr, String[] fieldAr) {
         // some code goes here
 		//
-		if (typeAr.length != fieldAr.length)
+		if (typeAr.length < 1 || typeAr.length == fieldAr.length)
 			throw new RuntimeException("lengths don't match");
 		
     	for(int i=0;i<typeAr.length;i++){
-    		if(i<fieldAr.length){
-    			TDItems.add(new TDItem(typeAr[i], fieldAr[i]));
-    		}else{
-    			TDItems.add(new TDItem(typeAr[i], null));
-    		}
+    		TDItems.add(new TDItem(typeAr[i], fieldAr[i]));
     	}
     }
 
@@ -234,7 +230,7 @@ public class TupleDesc implements Serializable {
         //throw new UnsupportedOperationException("unimplemented");
     	
     	//referred generate hashCode() and equals() on Eclipse
-    	final int prime = 7;
+    	final int prime = 23;
     	int hash = prime + getSize();
     	for(Iterator<TDItem> iter=iterator();iter.hasNext();){
     		hash = prime * hash + iter.next().fieldType.getLen();

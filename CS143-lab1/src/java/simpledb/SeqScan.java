@@ -10,6 +10,11 @@ import java.util.*;
 public class SeqScan implements DbIterator {
 
     private static final long serialVersionUID = 1L;
+    
+    private TransactionId tid;
+    private int tableid;
+    private String tableAlias;
+    private DbFileIterator iter = null;
 
     /**
      * Creates a sequential scan over the specified table as a part of the
@@ -29,6 +34,9 @@ public class SeqScan implements DbIterator {
      */
     public SeqScan(TransactionId tid, int tableid, String tableAlias) {
         // some code goes here
+    	this.tid = tid;
+    	this.tableid = tableid;
+    	this.tableAlias = tableAlias;
     }
 
     /**
@@ -46,7 +54,8 @@ public class SeqScan implements DbIterator {
     public String getAlias()
     {
         // some code goes here
-        return null;
+        //return null;
+    	return this.tableAlias;
     }
 
     /**
@@ -63,6 +72,9 @@ public class SeqScan implements DbIterator {
      */
     public void reset(int tableid, String tableAlias) {
         // some code goes here
+    	close();
+    	this.tableid = tableid;
+    	this.tableAlias = tableAlias;
     }
 
     public SeqScan(TransactionId tid, int tableid) {
@@ -71,6 +83,7 @@ public class SeqScan implements DbIterator {
 
     public void open() throws DbException, TransactionAbortedException {
         // some code goes here
+    	iter = Database.getCatalog().getDatabaseFile(tableid).iterator(tid);
     }
 
     /**
@@ -84,26 +97,32 @@ public class SeqScan implements DbIterator {
      */
     public TupleDesc getTupleDesc() {
         // some code goes here
-        return null;
+        //return null;
+    	return Database.getCatalog().getTupleDesc(tableid);
     }
 
     public boolean hasNext() throws TransactionAbortedException, DbException {
         // some code goes here
-        return false;
+        //return false;
+    	return iter.hasNext();
     }
 
     public Tuple next() throws NoSuchElementException,
             TransactionAbortedException, DbException {
         // some code goes here
-        return null;
+        //return null;
+    	return iter.next();
     }
 
     public void close() {
         // some code goes here
+    	iter = null;
     }
 
     public void rewind() throws DbException, NoSuchElementException,
             TransactionAbortedException {
         // some code goes here
+    	close();
+    	open();
     }
 }

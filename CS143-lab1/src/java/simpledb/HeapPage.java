@@ -13,13 +13,13 @@ import java.io.*;
  */
 public class HeapPage implements Page {
 
-    final HeapPageId pid;
-    final TupleDesc td;
-    final byte header[];
-    final Tuple tuples[];
-    final int numSlots;
+    private final HeapPageId pid;
+    private final TupleDesc td;
+    private final byte header[];
+    private final Tuple tuples[];
+    private final int numSlots;
 
-    byte[] oldData;
+    private byte[] oldData;
     private final Byte oldDataLock=new Byte((byte)0);
 
     /**
@@ -32,10 +32,10 @@ public class HeapPage implements Page {
      * database table, which can be determined via {@link Catalog#getTupleDesc}.
      * The number of 8-bit header words is equal to:
      * <p>
-     *      ceiling(no. tuple slots / 8)
+     *      ceiling(no. tuple slots / 8) = headerBytes
      * <p>
-     * @see Database#getCatalog
-     * @see Catalog#getTupleDesc
+     * @see Database#getCatalog()
+     * @see Catalog#getTupleDesc()
      * @see BufferPool#getPageSize()
      */
     public HeapPage(HeapPageId id, byte[] data) throws IOException {
@@ -68,9 +68,11 @@ public class HeapPage implements Page {
     private int getNumTuples() {        
         // some code goes here
         //return 0;
-		Double numTuplesDouble = new Double( Math.floor( ( 8.0*BufferPool.PAGE_SIZE ) / ( 8*this.td.getSize() + 1 ) ) );
-		return numTuplesDouble.intValue();
+    	
+		//Double numTuplesDouble = new Double( Math.floor( ( 8.0*BufferPool.PAGE_SIZE ) / ( 8*this.td.getSize() + 1 ) ) );
+		//return numTuplesDouble.intValue();
 
+    	return (int)(Math.floor((8.0*BufferPool.PAGE_SIZE )/(8*this.td.getSize()+1)));
     }
 
     /**
@@ -81,9 +83,11 @@ public class HeapPage implements Page {
         
         // some code goes here
         //return 0;
-		Double headerSizeDouble = new Double( this.getNumTuples() / 8.0 );
-		return headerSizeDouble.intValue();
-                 
+
+    	//Double headerSizeDouble = new Double( Math.ceil(this.getNumTuples() / 8.0 ) );
+		//return headerSizeDouble.intValue();
+          
+    	return (int)(Math.ceil(this.numSlots/8.0));
     }
     
     /** Return a view of this page before it was modified
@@ -289,7 +293,7 @@ public class HeapPage implements Page {
         // some code goes here
         //return 0;
 		int numEmptySlots = 0;
-		for (int i=0; i < this.getNumTuples(); i++)
+		for (int i=0; i < this.numSlots; i++)
 		{
 			if( !this.isSlotUsed(i) )
 				numEmptySlots++;
@@ -325,7 +329,7 @@ public class HeapPage implements Page {
         // some code goes here
         //return null;
 		List<Tuple> tuplesUsedSlots = new ArrayList<Tuple>();
-		for( int i = 0; i < this.getNumTuples(); i++ )
+		for( int i = 0; i < this.numSlots; i++ )
 		{
 			if( this.isSlotUsed(i) )
 			{

@@ -13,13 +13,13 @@ import java.util.*;
  * @see simpledb.HeapPage#HeapPage
  * @author Sam Madden
  */
-public class HeapFile implements DbFile {
+public class HeapFile implements DbFile{
 
 	/*
 	*/
 	private File f;
 	private TupleDesc td;
-
+	private ArrayList<Page> pages;
     /**
      * Constructs a heap file backed by the specified file.
      * 
@@ -48,7 +48,9 @@ public class HeapFile implements DbFile {
      * Returns an ID uniquely identifying this HeapFile. Implementation note:
      * you will need to generate this tableid somewhere ensure that each
      * HeapFile has a "unique id," and that you always return the same value for
-     * a particular HeapFile. We suggest hashing the absolute file name of the
+     * a particulFile f;
+	private TupleDesc td;
+ar HeapFile. We suggest hashing the absolute file name of the
      * file underlying the heapfile, i.e. f.getAbsoluteFile().hashCode().
      * 
      * @return an ID uniquely identifying this HeapFile.
@@ -56,7 +58,7 @@ public class HeapFile implements DbFile {
     public int getId() {
         // some code goes here
         //throw new UnsupportedOperationException("implement this");
-		return this.getFile().getAbsoluteFile().hashCode();
+		return this.f.getAbsoluteFile().hashCode();
     }
 
     /**
@@ -79,7 +81,7 @@ public class HeapFile implements DbFile {
 		
 		try
 		{
-			RandomAccessFile raf = new RandomAccessFile(this.getFile(), "r");
+			RandomAccessFile raf = new RandomAccessFile(this.f, "r");
 		
 			byte data [] = new byte [pageSize];
 			
@@ -112,10 +114,11 @@ public class HeapFile implements DbFile {
         // some code goes here
         //return 0;		
 		long numBytes = f.length();
-		Long numPagesLong = new Long( numBytes / BufferPool.PAGE_SIZE );
-		Double numPagesDouble = numPagesLong.doubleValue();
-		Double numPages = new Double( Math.ceil( numPagesDouble ) );
-		return numPages.intValue();
+		//Long numPagesLong = new Long( numBytes / BufferPool.PAGE_SIZE );
+		//Double numPagesDouble = numPagesLong.doubleValue();
+		//Double numPages = new Double( Math.ceil( numPagesDouble ) );
+		//return numPages.intValue();
+		return (int)(Math.ceil((double)numBytes / BufferPool.PAGE_SIZE));
     }
 
     // see DbFile.java for javadocs
@@ -138,6 +141,8 @@ public class HeapFile implements DbFile {
     public DbFileIterator iterator(TransactionId tid) {
         // some code goes here
         return null;
+    	
+    	
     }
 
 }
