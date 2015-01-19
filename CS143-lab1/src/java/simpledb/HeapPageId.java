@@ -49,10 +49,17 @@ public class HeapPageId implements PageId {
         // some code goes here
         //throw new UnsupportedOperationException("implement this");
     	
-		String tidString = Integer.toString( this.getTableId() );
+		/*String tidString = Integer.toString( this.getTableId() );
 		String pgNoString = Integer.toString( this.pageNumber() );
 		String concat = tidString + pgNoString;
-		return Integer.parseInt( concat );
+		return Integer.parseInt( concat );*/
+    	
+    	//referred generate hashCode() and equals() on Eclipse
+    	final int prime = 23;
+    	int hash = 1;
+    	hash = prime * hash + this.getTableId();
+    	hash = prime * hash + this.pageNumber();
+    	return hash;  
     }
 
     /**
@@ -70,7 +77,8 @@ public class HeapPageId implements PageId {
 		if( this.getClass() != o.getClass() )
 			return false;
 		PageId pid = (PageId) o;
-		return this.hashCode() == pid.hashCode();
+		//return this.hashCode() == pid.hashCode();
+		return ( ( this.getTableId() == pid.getTableId() ) && ( this.pageNumber() == pid.pageNumber() ) );
     }
 
     /**

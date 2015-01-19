@@ -19,7 +19,8 @@ public class HeapFile implements DbFile{
 	*/
 	private File f;
 	private TupleDesc td;
-	private ArrayList<Page> pages;
+	private ArrayList<Page> pages = new ArrayList<Page>();
+	
     /**
      * Constructs a heap file backed by the specified file.
      * 
@@ -31,6 +32,17 @@ public class HeapFile implements DbFile{
         // some code goes here
 		this.f = f;
 		this.td = td;
+		
+		/*for(int i=0; i<numPages();i++){
+			pages.add(readPage(new HeapPageId(getId(),i)));
+			try{
+				pages.add(Database.getBufferPool().getPage(null, new HeapPageId(getId(),i), Permissions.READ_ONLY));
+			}catch(DbException e){
+				System.err.println("HeapFile DbException");
+			}catch(TransactionAbortedException e){
+				System.err.println("HeapFile TransactionAbortedException");
+			}
+		}*/
     }
 
     /**
@@ -85,8 +97,9 @@ ar HeapFile. We suggest hashing the absolute file name of the
 		
 			byte data [] = new byte [pageSize];
 			
-			Integer posInt = new Integer(pageNo*pageSize);
-			Long pos = posInt.longValue();
+			//Integer posInt = new Integer(pageNo*pageSize);
+			//Long pos = posInt.longValue();
+			long pos = (long)pageNo * pageSize;
 			
 			raf.seek(pos);			
 			raf.read(data);
@@ -140,9 +153,18 @@ ar HeapFile. We suggest hashing the absolute file name of the
     // see DbFile.java for javadocs
     public DbFileIterator iterator(TransactionId tid) {
         // some code goes here
-        return null;
-    	
-    	
+        //return null;
+    	for(int i=0; i<numPages();i++){
+			//pages.add(readPage(new HeapPageId(getId(),i)));
+			try{
+				pages.add(Database.getBufferPool().getPage(null, new HeapPageId(getId(),i), Permissions.READ_ONLY));
+			}catch(DbException e){
+				System.err.println("HeapFile DbException");
+			}catch(TransactionAbortedException e){
+				System.err.println("HeapFile TransactionAbortedException");
+			}
+		}
+    	return new TransactionDbFileIterator(tid, pages);	
     }
 
 }

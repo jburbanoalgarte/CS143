@@ -64,7 +64,7 @@ public class TupleDesc implements Serializable {
     public TupleDesc(Type[] typeAr, String[] fieldAr) {
         // some code goes here
 		//
-		if (typeAr.length < 1 || typeAr.length == fieldAr.length)
+		if (typeAr.length < 1 || typeAr.length != fieldAr.length)
 			throw new RuntimeException("lengths don't match");
 		
     	for(int i=0;i<typeAr.length;i++){
