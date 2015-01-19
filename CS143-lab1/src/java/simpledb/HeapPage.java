@@ -336,6 +336,7 @@ public class HeapPage implements Page {
 				tuplesUsedSlots.add( tuples[i] );
 			}//end if
 		}//end for
+		
 		return tuplesUsedSlots.iterator();
     }
 

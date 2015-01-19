@@ -55,7 +55,7 @@ public class HeapPageId implements PageId {
 		return Integer.parseInt( concat );*/
     	
     	//referred generate hashCode() and equals() on Eclipse
-    	final int prime = 23;
+    	final int prime = 7;
     	int hash = 1;
     	hash = prime * hash + this.getTableId();
     	hash = prime * hash + this.pageNumber();

@@ -31,8 +31,9 @@ public class TransactionDbFileIterator implements DbFileIterator{
 
 	@Override
 	public boolean hasNext() throws DbException, TransactionAbortedException {
-		if(iterPage == null || iterTuple == null)
+		if(iterPage == null || iterTuple == null){
 			return false;
+		}
 		
 		if(iterTuple.hasNext()){
 			return true;

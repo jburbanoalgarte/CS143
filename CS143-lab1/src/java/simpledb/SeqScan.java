@@ -37,6 +37,7 @@ public class SeqScan implements DbIterator {
     	this.tid = tid;
     	this.tableid = tableid;
     	this.tableAlias = tableAlias;
+    	//System.out.println("SeqScan: "+tid+", "+tableid+", "+tableAlias+", "+serialVersionUID);
     }
 
     /**
@@ -118,6 +119,7 @@ public class SeqScan implements DbIterator {
 
     public void close() {
         // some code goes here
+    	iter.close();
     	iter = null;
     }
 

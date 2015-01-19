@@ -19,7 +19,7 @@ public class HeapFile implements DbFile{
 	*/
 	private File f;
 	private TupleDesc td;
-	private ArrayList<Page> pages = new ArrayList<Page>();
+	private ArrayList<Page> pages;
 	
     /**
      * Constructs a heap file backed by the specified file.
@@ -154,6 +154,7 @@ ar HeapFile. We suggest hashing the absolute file name of the
     public DbFileIterator iterator(TransactionId tid) {
         // some code goes here
         //return null;
+    	pages = new ArrayList<Page>();
     	for(int i=0; i<numPages();i++){
 			//pages.add(readPage(new HeapPageId(getId(),i)));
 			try{
