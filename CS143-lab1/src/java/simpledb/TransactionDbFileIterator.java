@@ -25,7 +25,7 @@ public class TransactionDbFileIterator implements DbFileIterator{
 		if(iterPage.hasNext()){
 			iterTuple = ((HeapPage)(Database.getBufferPool().getPage(tid, iterPage.next().getId(), Permissions.READ_ONLY))).iterator();
 		}else{
-			throw new DbException("No page!");
+			throw new DbException("TransactionDbFileIterator.open() DbException");
 		}
 	}
 

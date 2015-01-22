@@ -32,17 +32,6 @@ public class HeapFile implements DbFile{
         // some code goes here
 		this.f = f;
 		this.td = td;
-		
-		/*for(int i=0; i<numPages();i++){
-			pages.add(readPage(new HeapPageId(getId(),i)));
-			try{
-				pages.add(Database.getBufferPool().getPage(null, new HeapPageId(getId(),i), Permissions.READ_ONLY));
-			}catch(DbException e){
-				System.err.println("HeapFile DbException");
-			}catch(TransactionAbortedException e){
-				System.err.println("HeapFile TransactionAbortedException");
-			}
-		}*/
     }
 
     /**
@@ -97,8 +86,6 @@ ar HeapFile. We suggest hashing the absolute file name of the
 		
 			byte data [] = new byte [pageSize];
 			
-			//Integer posInt = new Integer(pageNo*pageSize);
-			//Long pos = posInt.longValue();
 			long pos = (long)pageNo * pageSize;
 			
 			raf.seek(pos);			
@@ -126,12 +113,7 @@ ar HeapFile. We suggest hashing the absolute file name of the
     public int numPages() {
         // some code goes here
         //return 0;		
-		long numBytes = f.length();
-		//Long numPagesLong = new Long( numBytes / BufferPool.PAGE_SIZE );
-		//Double numPagesDouble = numPagesLong.doubleValue();
-		//Double numPages = new Double( Math.ceil( numPagesDouble ) );
-		//return numPages.intValue();
-		return (int)(Math.ceil((double)numBytes / BufferPool.PAGE_SIZE));
+		return (int)(Math.ceil((double)f.length() / BufferPool.PAGE_SIZE));
     }
 
     // see DbFile.java for javadocs
@@ -156,7 +138,6 @@ ar HeapFile. We suggest hashing the absolute file name of the
         //return null;
     	pages = new ArrayList<Page>();
     	for(int i=0; i<numPages();i++){
-			//pages.add(readPage(new HeapPageId(getId(),i)));
 			try{
 				pages.add(Database.getBufferPool().getPage(null, new HeapPageId(getId(),i), Permissions.READ_ONLY));
 			}catch(DbException e){
