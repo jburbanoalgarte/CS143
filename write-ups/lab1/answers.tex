@@ -46,7 +46,8 @@
 \numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
 \numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
 
-\setlength\parindent{0pt} % Removes all indentation from paragraphs - comment this line for an assignment with lots of text
+\setlength\parindent{10pt} % Removes all indentation from paragraphs - comment this line for an assignment with lots of text
+\setlength{\parskip}{\baselineskip}%
 
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
@@ -61,7 +62,7 @@
 \horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
 }
 
-\author{Jordi Burbano, Keisuke Daimon} % Your name
+\author{Jordi Burbano (204 076 325), Keisuke Daimon (604 547 017)} % Your name
 
 \date{\normalsize\today} % Today's date or a custom date
 
@@ -75,7 +76,11 @@
 
 \section{Design Decisions}
 
-\lipsum[1]
+For this lab, design decisions were minimal as most of the implementation consisted of filling out skeleton methods and defining fields within classes.
+
+For the HeapFile.readPage() method, we decided to use the RandomAccessFile class to achieve random access to the file's contents. Its methods seek and read were useful in starting at the appropriate byte in the file and reading out a page of bytes from there. We had initially considered using the BufferedWriter class but we rejected it because we would have to start reading from the file's beginning. Thus, it seems advantageous to use RandomAccessFile at this point.
+
+Implementing HeapFile.iterator() required defining a class to implement the DbFileIterator interface. The class we defined was named TransactionDbFileIterator. The class has two iterators, Iterator<Page> and Iterator<Tuples>, as its fields. TransactionDbFileIterator.hasNext() has two functions. One is to check if Iterator<Tuple> has a next element. If it does not, whether Iterator<Page> has a next page or not is checked. By doing this, users of TransactionDbFileIterator get every Tuple without thinking about how many pages the file uses (the length of Iterator<Page>). We wrote this process in TransactionDbFileIterator.hasNext(), so the implementation of TransactionDbFileIterator.next() is really simple.
 
 
 
@@ -85,7 +90,7 @@
 
 \section{Changes to the API}
 
-\lipsum[7]
+We made no changes to the API.
 
 
 
@@ -95,7 +100,7 @@
 
 \section{Missing or Incomplete Elements of Our Code}
 
-\lipsum[3]
+Our code has no missing or incomplete elements.
 
 
 
@@ -105,7 +110,11 @@
 
 \section{Logistics}
 
-\lipsum[1]
+We spent approximately 30 man-hours on the project.
+
+We did not find any component to be particularly difficult or confusing.
+
+However, regarding checking whether a slot was in use in the method HeapPage.isSlotUsed(), the bit ordering within each byte of the header[] array was somewhat counterintuitive; i.e. it would have seemed more intuitive for the bit ordering to be like [slot0,...,slot7][slot8,...,slot15]... instead of  [slot7, ..., slot0][slot15,...,slot8]... .
 
 
 
