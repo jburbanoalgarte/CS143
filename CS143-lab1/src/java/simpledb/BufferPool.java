@@ -32,7 +32,7 @@ public class BufferPool {
 	private int numPages;
 	
 	/*
-		Store pages as a hash map indexed by PageId.
+		Store pages as a hash map indexed by PageId hash codes.
 	*/
 	private ConcurrentHashMap<Integer, Page> cachedPages = null;
 	
@@ -79,7 +79,7 @@ public class BufferPool {
 		{
 			return cachedPages.get(cachedPagesKey);
 		}
-		else
+		else // page is not cached
 		{
 			if( cachedPages.size() >= numPages ) // buffer pool is full
 			{
