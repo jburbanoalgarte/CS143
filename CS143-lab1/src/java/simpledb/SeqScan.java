@@ -85,8 +85,12 @@ public class SeqScan implements DbIterator {
 
     public void open() throws DbException, TransactionAbortedException {
         // some code goes here
-    	iter = Database.getCatalog().getDatabaseFile(tableid).iterator(tid);
-    	iter.open();
+		try	{
+			iter = Database.getCatalog().getDatabaseFile(tableid).iterator(tid);
+			iter.open();
+		} catch (Exception e) {
+			throw new DbException("SeqScan.open() DbException");
+		}
     }
 
     /**
@@ -107,6 +111,8 @@ public class SeqScan implements DbIterator {
     public boolean hasNext() throws TransactionAbortedException, DbException {
         // some code goes here
         //return false;
+		if( iter == null )
+			throw new IllegalStateException();
     	return iter.hasNext();
     }
 
@@ -114,6 +120,12 @@ public class SeqScan implements DbIterator {
             TransactionAbortedException, DbException {
         // some code goes here
         //return null;
+		if( !iter.hasNext() )
+			throw new NoSuchElementException();
+		
+		if( iter == null )
+			throw new IllegalStateException();
+		
     	return iter.next();
     }
 
@@ -126,6 +138,9 @@ public class SeqScan implements DbIterator {
     public void rewind() throws DbException, NoSuchElementException,
             TransactionAbortedException {
         // some code goes here
+		if( iter == null )
+			throw new IllegalStateException();
+			
     	close();
     	open();
     }
