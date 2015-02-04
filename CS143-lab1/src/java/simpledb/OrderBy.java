@@ -13,7 +13,7 @@ public class OrderBy extends Operator {
     private ArrayList<Tuple> childTups = new ArrayList<Tuple>();
     private int orderByField;
     private String orderByFieldName;
-    private Iterator<Tuple> it;
+    private Iterator<Tuple> it; //return sorted Tuples
     private boolean asc;
 
     /**
@@ -29,24 +29,21 @@ public class OrderBy extends Operator {
     public OrderBy(int orderbyField, boolean asc, DbIterator child) {
         this.child = child;
         td = child.getTupleDesc();
-        this.orderByField = orderbyField;
-        this.orderByFieldName = td.getFieldName(orderbyField);
+        this.orderByField = orderbyField; //int
+        this.orderByFieldName = td.getFieldName(orderbyField); //String
         this.asc = asc;
     }
     
-    public boolean isASC()
-    {
-	return this.asc;
+    public boolean isASC(){
+    	return this.asc;
     }
     
-    public int getOrderByField()
-    {
+    public int getOrderByField(){
         return this.orderByField;
     }
     
-    public String getOrderFieldName()
-    {
-	return this.orderByFieldName;
+    public String getOrderFieldName(){
+    	return this.orderByFieldName;
     }
     
     public TupleDesc getTupleDesc() {
@@ -60,7 +57,7 @@ public class OrderBy extends Operator {
         while (child.hasNext())
             childTups.add((Tuple) child.next());
         Collections.sort(childTups, new TupleComparator(orderByField, asc));
-        it = childTups.iterator();
+        it = childTups.iterator(); //childTups is sorted
         super.open();
     }
 
@@ -102,10 +99,10 @@ public class OrderBy extends Operator {
 
 class TupleComparator implements Comparator<Tuple> {
     int field;
-    boolean asc;
+    boolean asc; //default: ascending order		DESC: descending order
 
     public TupleComparator(int field, boolean asc) {
-        this.field = field;
+        this.field = field; //index of the field
         this.asc = asc;
     }
 

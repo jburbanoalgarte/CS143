@@ -84,7 +84,11 @@ public class Tuple implements Serializable {
     public Field getField(int i) {
         // some code goes here
         //return null;
-    	return this.fs.get(i);
+    	if(i<fs.size()){
+    		return this.fs.get(i);
+    	}else{
+    		return null;
+    	}
     }
 
     /**
@@ -131,6 +135,7 @@ public class Tuple implements Serializable {
     {
         // some code goes here
     	this.td=td;
+    	this.fs.clear();
     	for(int i=0;i<td.numFields();i++){
     		this.fs.add(null);
 		}
@@ -141,6 +146,7 @@ public class Tuple implements Serializable {
     			new Type[]{Type.INT_TYPE,Type.INT_TYPE,Type.STRING_TYPE},
     			new String[]{"ID1","ID2","STR"});
     	Tuple t=new Tuple(td);
+    	t.getField(4);
     	System.out.println(t);
     }
 }

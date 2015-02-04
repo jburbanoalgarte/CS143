@@ -58,6 +58,7 @@ public class IntField implements Field {
             return value != iVal.value;
 
         case GREATER_THAN:
+        	//System.out.println("IntField.compare(): "+value+" "+iVal.value);
             return value > iVal.value;
 
         case GREATER_THAN_OR_EQ:
@@ -69,8 +70,8 @@ public class IntField implements Field {
         case LESS_THAN_OR_EQ:
             return value <= iVal.value;
 
-    case LIKE:
-        return value == iVal.value;
+        case LIKE:
+        	return value == iVal.value;
         }
 
         return false;

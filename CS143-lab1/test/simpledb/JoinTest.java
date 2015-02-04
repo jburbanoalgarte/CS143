@@ -57,6 +57,7 @@ public class JoinTest extends SimpleDbTestBase {
    * Unit test for Join.getTupleDesc()
    */
   @Test public void getTupleDesc() {
+	System.out.println("getTupleDesc()");
     JoinPredicate pred = new JoinPredicate(0, Predicate.Op.EQUALS, 0);
     Join op = new Join(pred, scan1, scan2);
     TupleDesc expected = Utility.getTupleDesc(width1 + width2);
@@ -87,6 +88,7 @@ public class JoinTest extends SimpleDbTestBase {
    * Unit test for Join.getNext() using a &gt; predicate
    */
   @Test public void gtJoin() throws Exception {
+	System.out.println("gtJoin()");
     JoinPredicate pred = new JoinPredicate(0, Predicate.Op.GREATER_THAN, 0);
     Join op = new Join(pred, scan1, scan2);
     op.open();
@@ -98,6 +100,7 @@ public class JoinTest extends SimpleDbTestBase {
    * Unit test for Join.getNext() using an = predicate
    */
   @Test public void eqJoin() throws Exception {
+	System.out.println("eqJoin()");
     JoinPredicate pred = new JoinPredicate(0, Predicate.Op.EQUALS, 0);
     Join op = new Join(pred, scan1, scan2);
     op.open();

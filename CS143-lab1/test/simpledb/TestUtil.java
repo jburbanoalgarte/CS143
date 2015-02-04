@@ -129,6 +129,22 @@ public class TestUtil {
             DbException, TransactionAbortedException {
         // TODO(ghuo): this n^2 set comparison is kind of dumb, but we haven't
         // implemented hashCode or equals for tuples.
+    	
+    	///
+    	int exSize=0, acSize=0;
+    	while(expected.hasNext()){
+    		expected.next();
+    		exSize++;
+    	}
+    	while(actual.hasNext()){
+    		actual.next();
+    		acSize++;
+    	}
+    	System.out.println("TestUtil.matchAllTuples(): expected: "+exSize+", actual: "+acSize);
+    	expected.rewind();
+    	actual.rewind();
+    	///
+    	
         boolean matched = false;
         while (expected.hasNext()) {
             Tuple expectedTup = expected.next();

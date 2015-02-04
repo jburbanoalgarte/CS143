@@ -16,7 +16,7 @@ public abstract class Operator implements DbIterator {
             throw new IllegalStateException("Operator not yet open");
         
         if (next == null)
-            next = fetchNext();
+            next = fetchNext(); //set the next Tuple
         return next != null;
     }
 

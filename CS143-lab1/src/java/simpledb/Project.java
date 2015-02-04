@@ -21,7 +21,7 @@ public class Project extends Operator {
      * @param typesList
      *            the types of the fields in the final projection
      * @param child
-     *            The child operator
+     *            The child operator (iterator of Tuples)
      */
     public Project(ArrayList<Integer> fieldList, ArrayList<Type> typesList,
             DbIterator child) {
@@ -38,7 +38,7 @@ public class Project extends Operator {
         for (int i = 0; i < fieldAr.length; i++) {
             fieldAr[i] = childtd.getFieldName(fieldList.get(i));
         }
-        td = new TupleDesc(types, fieldAr);
+        td = new TupleDesc(types, fieldAr); //TupleDesc which has already projected out
     }
 
     public TupleDesc getTupleDesc() {
@@ -75,22 +75,21 @@ public class Project extends Operator {
             for (int i = 0; i < td.numFields(); i++) {
                 newTuple.setField(i, t.getField(outFieldIds.get(i)));
             }
-            return newTuple;
+            return newTuple; // Tuple which has already projected out
         }
         return null;
     }
 
     @Override
     public DbIterator[] getChildren() {
-        return new DbIterator[] { this.child };
+        return new DbIterator[] { this.child }; // DbIterator child
     }
 
     @Override
     public void setChildren(DbIterator[] children) {
-	if (this.child!=children[0])
-	{
-	    this.child = children[0];
-	}
+    	if (this.child!=children[0]){
+    		this.child = children[0];
+    	}
     }
     
 }
