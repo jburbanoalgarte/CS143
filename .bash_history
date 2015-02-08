@@ -93,3 +93,21 @@ ant runtest -Dtest=TupleDescTest
 ant runtest -Dtest=RecordIdTest
 ant runtest -Dtest=HeapPage
 ant runtest -Dtest=HeapPageReadTest
+mount -t vboxsf CS143 .
+sudo mount -t vboxsf CS143 .
+ls
+cd ..
+ls
+cd jordi
+ls
+cd CS143-lab1
+ls
+runtest
+ant runtest -Dtest=PredicateTest
+ant runtest -Dtest=JoinPredicateTest
+ant runtest -Dtest=FilterTest
+ant runtest -Dtest=JoinTest
+ant runsystest -Dtest=FilterTest
+ant runsystest -Dtest=JoinTest
+ant runtest -Dtest=JoinTest
+ant runtest -Dtest=IntegerAggregatorTest
