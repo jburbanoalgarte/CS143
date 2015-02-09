@@ -15,23 +15,28 @@ public class IntegerAggregator implements Aggregator {
 	private Type gbfieldtype;
 	private int afield;
 	private Op what;
-	
-	// key: Object (either IntField or StringField) representing the group by field
+
+	// key: Object (either int or String) representing the group by field
 	// value: aggregate data for the specified group by field eg a sum
 	// if there is no grouping, then use null as key
 	private HashMap<Object, Integer> aggregateData;
 	
-	// key: Object (either IntField or StringField) representing the group by field
+	// key: Object (either int or String) representing the group by field
 	// value: number of tuples in the specified group by field
 	// if there is no grouping, then use null as key
 	private HashMap<Object, Integer> groupByFieldCounts;
+	
+	// key: Object (either int or String) representing the group by field
+	// value: sum for the specified group by field
+	// if there is no grouping, then use null as key
+	private HashMap<Object, Integer> groupByFieldSums;
 	
     /**
      * Aggregate constructor
      * 
      * @param gbfield
      *            the 0-based index of the group-by field in the tuple, or
-     *            NO_GROUPING if there is no grouping
+     *            Aggregator.NO_GROUPING (=-1) if there is no grouping
      * @param gbfieldtype
      *            the type of the group by field (e.g., Type.INT_TYPE), or null
      *            if there is no grouping
@@ -47,8 +52,10 @@ public class IntegerAggregator implements Aggregator {
 		this.gbfieldtype = gbfieldtype;
 		this.afield = afield;
 		this.what = what;
+		
 		this.aggregateData = new HashMap<Object, Integer>();
 		this.groupByFieldCounts = new HashMap<Object, Integer>();
+		this.groupByFieldSums = new HashMap<Object, Integer>();
     }
 
     /**
@@ -60,23 +67,27 @@ public class IntegerAggregator implements Aggregator {
      */
     public void mergeTupleIntoGroup(Tuple tup) {
         // some code goes here
+    	
 		//obtain gbfieldValue, key to hashmap
-		Field theField = tup.getField(this.gbfield);
-		
+		Field theField=null;
 		Object gbfieldValue = null;
+		
 		if( this.gbfield == Aggregator.NO_GROUPING )
 		{
 			gbfieldValue = null;
 		}
-		else if( theField.getType() == Type.INT_TYPE )
+		else
 		{
-			gbfieldValue = ( (IntField) theField ).getValue();
+			theField = tup.getField(this.gbfield);
+			if( theField.getType() == Type.INT_TYPE )
+			{
+				gbfieldValue = ( (IntField) theField ).getValue();
+			}
+			else if( theField.getType() == Type.STRING_TYPE )
+			{
+				gbfieldValue = ( (StringField) theField ).getValue();
+			}
 		}
-		else if( theField.getType() == Type.STRING_TYPE )
-		{
-			gbfieldValue = ( (StringField) theField ).getValue();
-		}
-		
 		//if key is not in hashmap, then initialize a value
 		if( !aggregateData.containsKey(gbfieldValue) )
 		{
@@ -112,13 +123,14 @@ public class IntegerAggregator implements Aggregator {
 			
 			// initialize counter to zero
 			groupByFieldCounts.put(gbfieldValue, 0);
-		}
+			groupByFieldSums.put(gbfieldValue, 0);
+		}//end if key is not in hashmap
 		
 		//determine new aggregateValue
-		int aggregateValue = aggregateData.get(gbfieldValue);
-		int gbFieldCount = groupByFieldCounts.get(gbfieldValue);
-		gbFieldCount++; //add tuple
 		int tupleValue = ( (IntField) tup.getField(this.afield) ).getValue();
+		int aggregateValue = aggregateData.get(gbfieldValue);
+		int gbFieldCount = groupByFieldCounts.get(gbfieldValue) + 1;
+		int gbFieldSum = groupByFieldSums.get(gbfieldValue) + tupleValue;
 		switch( what ) {
 		
 			case COUNT:
@@ -133,7 +145,7 @@ public class IntegerAggregator implements Aggregator {
 			}//end case SUM
 			case AVG:
 			{
-				aggregateValue = ( (gbFieldCount-1)*aggregateValue + tupleValue ) / gbFieldCount;
+				aggregateValue = gbFieldSum / gbFieldCount;
 				break;
 			}//end case AVG
 			case MIN:
@@ -159,6 +171,7 @@ public class IntegerAggregator implements Aggregator {
 		//update aggregate data and gbfield counts
 		aggregateData.put(gbfieldValue, aggregateValue);
 		groupByFieldCounts.put(gbfieldValue, gbFieldCount);
+		groupByFieldSums.put(gbfieldValue, gbFieldSum);
     }
 
     /**
@@ -174,7 +187,7 @@ public class IntegerAggregator implements Aggregator {
         //throw new
         //UnsupportedOperationException("please implement me for lab2");
 		
-		//first, create a TupleDesc, with 2 possibilites
+		//first, create a TupleDesc, with 2 possibilities
 		// no grouping: (aggregateValue)
 		Type[] iteratorTypeAr;
 		String[] iteratorFieldAr;
@@ -223,10 +236,6 @@ public class IntegerAggregator implements Aggregator {
 				}
 			
 			}//end if
-			else
-			{
-				groupValueField = new IntField(0);
-			}//end else
 		
 			int aggregateValue = this.aggregateData.get(gbfield);
 			
