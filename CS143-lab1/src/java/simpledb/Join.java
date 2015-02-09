@@ -45,9 +45,14 @@ public class Join extends Operator {
     public String getJoinField1Name() {
         // some code goes here
         //return null;
-    	
-    	//should be modified!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! How can I get table name? 
-    	return children[0].getTupleDesc().getFieldName(p.getField1());
+    	children[0].open();
+		
+		String tableName = Database.getCatalog().getTableName( children[0].next().getRecordId().getPageId().getTableId() );
+		String fieldName = children[0].getTupleDesc().getFieldName(p.getField1());
+    	 
+    	String ans = ( tableName + "." + fieldName );
+		children[0].close();
+		return ans;
     }
 
     /**
@@ -58,9 +63,14 @@ public class Join extends Operator {
     public String getJoinField2Name() {
         // some code goes here
         //return null;
-    	
-    	//should be modified!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    	return children[1].getTupleDesc().getFieldName(p.getField2());
+    	children[1].open();
+		
+		String tableName = Database.getCatalog().getTableName( children[1].next().getRecordId().getPageId().getTableId() );
+		String fieldName = children[1].getTupleDesc().getFieldName(p.getField1());
+    	 
+    	String ans = ( tableName + "." + fieldName );
+		children[1].close();
+		return ans;
     }
 
     /**
