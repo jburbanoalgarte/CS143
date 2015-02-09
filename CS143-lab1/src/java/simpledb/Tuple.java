@@ -129,7 +129,7 @@ public class Tuple implements Serializable {
     }
     
     /**
-     * reset the TupleDesc of thi tuple
+     * reset the TupleDesc of the tuple
      * */
     public void resetTupleDesc(TupleDesc td)
     {

@@ -48,9 +48,10 @@ public class HeapPageWriteTest extends SimpleDbTestBase {
      * Unit test for HeapPage.addTuple()
      */
     @Test public void addTuple() throws Exception {
+    	System.out.println("HeapPageWriteTest.addTuple()");
         HeapPage page = new HeapPage(pid, HeapPageReadTest.EXAMPLE_DATA);
         int free = page.getNumEmptySlots();
-
+        
         // NOTE(ghuo): this nested loop existence check is slow, but it
         // shouldn't make a difference for n = 504 slots.
 
@@ -90,6 +91,7 @@ public class HeapPageWriteTest extends SimpleDbTestBase {
      */
     @Test(expected=DbException.class)
         public void deleteNonexistentTuple() throws Exception {
+    	System.out.println("HeapPageWriteTest.deleteNonexistentTuple()");
         HeapPage page = new HeapPage(pid, HeapPageReadTest.EXAMPLE_DATA);
         page.deleteTuple(Utility.getHeapTuple(2, 2));
     }
