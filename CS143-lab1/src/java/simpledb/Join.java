@@ -45,13 +45,23 @@ public class Join extends Operator {
     public String getJoinField1Name() {
         // some code goes here
         //return null;
-    	children[0].open();
-		
-		String tableName = Database.getCatalog().getTableName( children[0].next().getRecordId().getPageId().getTableId() );
-		String fieldName = children[0].getTupleDesc().getFieldName(p.getField1());
+		try {
+			children[0].open();
+		} catch(Exception e)
+		{
+			System.out.println("Exception: Failed to open DbIterator in Join.getJoinField1Name()");
+		}
+		String ans = "";
+		try {
+			String tableName = Database.getCatalog().getTableName( children[0].next().getRecordId().getPageId().getTableId() );
+			String fieldName = children[0].getTupleDesc().getFieldName(p.getField1());
     	 
-    	String ans = ( tableName + "." + fieldName );
-		children[0].close();
+			ans = ( tableName + "." + fieldName );
+			children[0].close();
+		} catch(Exception e)
+		{
+			System.out.println("Exception: Failed to access next tuple in Join.getField1Name()");
+		}
 		return ans;
     }
 
@@ -63,13 +73,23 @@ public class Join extends Operator {
     public String getJoinField2Name() {
         // some code goes here
         //return null;
-    	children[1].open();
-		
-		String tableName = Database.getCatalog().getTableName( children[1].next().getRecordId().getPageId().getTableId() );
-		String fieldName = children[1].getTupleDesc().getFieldName(p.getField1());
-    	 
-    	String ans = ( tableName + "." + fieldName );
-		children[1].close();
+		try {
+			children[1].open();
+		} catch(Exception e)
+		{
+			System.out.println("Exception: Failed to open DbIterator in Join.getJoinField2Name()");
+		}
+		String ans = "";
+		try {
+			String tableName = Database.getCatalog().getTableName( children[1].next().getRecordId().getPageId().getTableId() );
+			String fieldName = children[1].getTupleDesc().getFieldName(p.getField1());
+			 
+			ans = ( tableName + "." + fieldName );
+			children[1].close();
+		} catch(Exception e)
+		{
+			System.out.println("Exception: Failed to access next tuple in Join.getField2Name()");
+		}
 		return ans;
     }
 
