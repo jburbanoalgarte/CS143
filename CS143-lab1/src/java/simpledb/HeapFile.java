@@ -21,6 +21,8 @@ public class HeapFile implements DbFile{
 	private TupleDesc td;
 	private ArrayList<Page> pages;
 	
+    private ArrayList<Byte> pageLocks;
+	
     /**
      * Constructs a heap file backed by the specified file.
      * 
@@ -32,6 +34,12 @@ public class HeapFile implements DbFile{
         // some code goes here
 		this.f = f;
 		this.td = td;
+		
+		this.pageLocks = new ArrayList<Byte>();
+		for(int i=0; i < (this.numPages() + 1); i++)
+		{
+			this.pageLocks.add((byte) 0);
+		}//end for
     }
 
     /**
@@ -105,6 +113,28 @@ ar HeapFile. We suggest hashing the absolute file name of the
     public void writePage(Page page) throws IOException {
         // some code goes here
         // not necessary for lab1
+		int pageNo = page.getId().pageNumber();
+		int pageSize = BufferPool.getPageSize();
+		
+		try
+		{
+			RandomAccessFile raf = new RandomAccessFile(this.f, "rw");
+		
+			byte data [] = new byte [pageSize];
+			data = page.getPageData();
+			long pos = (long)pageNo * pageSize;
+			
+			raf.seek(pos);
+			raf.write(data);
+			
+			//HeapPageId hpid = (HeapPageId) pid;
+			//HeapPage thePage = new HeapPage(hpid, data);
+			//return thePage;
+		} catch(Exception e)
+		{
+			throw new IOException("Write failed in HeapFile.writePage()");
+		}
+		
     }
 
     /**
@@ -120,16 +150,81 @@ ar HeapFile. We suggest hashing the absolute file name of the
     public ArrayList<Page> insertTuple(TransactionId tid, Tuple t)
             throws DbException, IOException, TransactionAbortedException {
         // some code goes here
-        return null;
+        //return null;
         // not necessary for lab1
+		
+		BufferPool bp = Database.getBufferPool();
+		
+		//search for free page
+		HeapPageId pid = new HeapPageId(this.getId(), 0);
+		int pageNo=0;
+		for( ; pageNo < this.numPages(); pageNo++ )
+		{
+		
+			HeapPageId apid = new HeapPageId(this.getId(), pageNo);
+			HeapPage aPage = (HeapPage) bp.getPage(tid, apid, Permissions.READ_ONLY);
+			if( aPage.getNumEmptySlots() > 0 ) //if a page has free space, then select it for tuple insertion
+			{
+				pid = aPage.getId();
+				break;
+			}//end if
+			
+			if( pageNo == (this.numPages() - 1) ) //no free page was found, so must add new page to heapfile
+			{
+				this.pageLocks.add((byte) 0);
+				byte[] blankData = new byte[BufferPool.getPageSize()];
+				apid = new HeapPageId(this.getId(), ++pageNo);
+				pid = apid;
+				HeapPage newPage = new HeapPage(apid, blankData);
+				this.writePage(newPage);
+				break;
+			}//end if
+			
+		}//end for
+		
+		HeapPage thePage;
+		synchronized( this.pageLocks.get(pageNo) )
+		{
+			thePage = (HeapPage) bp.getPage(tid, pid, Permissions.READ_WRITE);
+		
+			//insert tuple into free page
+			thePage.insertTuple(t);
+			
+			//mark as dirty
+			thePage.markDirty(true, tid);
+		}//end synchronized
+		
+		//add free page to return value
+		ArrayList<Page> modifiedPages = new ArrayList<Page>();
+		modifiedPages.add(thePage);
+		return modifiedPages;
     }
 
     // see DbFile.java for javadocs
     public ArrayList<Page> deleteTuple(TransactionId tid, Tuple t) throws DbException,
             TransactionAbortedException {
         // some code goes here
-        return null;
+        //return null;
         // not necessary for lab1
+		HeapPageId pid = (HeapPageId) t.getRecordId().getPageId();
+		
+		if( pid.getTableId() != this.getId() )
+		{
+			throw new DbException("The tuple is not a member of the file.");
+		}//end if
+		
+		HeapPage thePage;
+		synchronized( this.pageLocks.get( pid.pageNumber() ) )
+		{
+			thePage = (HeapPage) Database.getBufferPool().getPage(tid, pid, Permissions.READ_WRITE);
+			thePage.deleteTuple(t);
+			thePage.markDirty(true, tid);
+		}//end synchronized
+		
+		ArrayList<Page> modifiedPage = new ArrayList<Page>();
+		modifiedPage.add(thePage);
+		
+		return modifiedPage;
     }
 
     // see DbFile.java for javadocs
