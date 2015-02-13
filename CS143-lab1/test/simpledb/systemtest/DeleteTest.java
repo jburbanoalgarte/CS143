@@ -12,6 +12,7 @@ public class DeleteTest extends FilterBase {
     @Override
     protected int applyPredicate(HeapFile table, TransactionId tid, Predicate predicate)
             throws DbException, TransactionAbortedException, IOException {
+    	System.out.println("DeleteTest.applyPredicate()");
         SeqScan ss = new SeqScan(tid, table.getId(), "");
         Filter filter = new Filter(predicate, ss);
         Delete deleteOperator = new Delete(tid, filter);
@@ -40,6 +41,7 @@ public class DeleteTest extends FilterBase {
             assert result == createdTuples.size();
             expectedTuples = new ArrayList<ArrayList<Integer>>();
         }
+        System.out.println("DeleteTest.applyPredicate(): expectedTuples.size: "+expectedTuples.size());
         SystemTestUtil.matchTuples(table, tid, expectedTuples);
         return result;
     }

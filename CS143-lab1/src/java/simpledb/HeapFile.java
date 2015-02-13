@@ -156,7 +156,7 @@ ar HeapFile. We suggest hashing the absolute file name of the
 		BufferPool bp = Database.getBufferPool();
 		
 		//search for free page
-		HeapPageId pid = new HeapPageId(this.getId(), 0);
+		HeapPageId pid = null;
 		int pageNo=0;
 		for( ; pageNo < this.numPages(); pageNo++ )
 		{
@@ -236,9 +236,9 @@ ar HeapFile. We suggest hashing the absolute file name of the
 			try{
 				pages.add(Database.getBufferPool().getPage(null, new HeapPageId(getId(),i), Permissions.READ_ONLY));
 			}catch(DbException e){
-				System.err.println("HeapFile DbException");
+				System.err.println("HeapFile.iterator: DbException");
 			}catch(TransactionAbortedException e){
-				System.err.println("HeapFile TransactionAbortedException");
+				System.err.println("HeapFile.iterator: TransactionAbortedException");
 			}
 		}
     	return new TransactionDbFileIterator(tid, pages);	

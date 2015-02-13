@@ -22,10 +22,12 @@ public class TransactionDbFileIterator implements DbFileIterator{
 	@Override
 	public void open() throws DbException, TransactionAbortedException {
 		iterPage = pages.iterator();
-		if(iterPage.hasNext()){
+		while(iterPage.hasNext()){
 			iterTuple = ((HeapPage)(Database.getBufferPool().getPage(tid, iterPage.next().getId(), Permissions.READ_ONLY))).iterator();
-		}else{
-			throw new DbException("TransactionDbFileIterator.open() DbException");
+			if(iterTuple.hasNext())
+				break;
+			else
+				iterTuple=null;
 		}
 	}
 
@@ -38,12 +40,14 @@ public class TransactionDbFileIterator implements DbFileIterator{
 		if(iterTuple.hasNext()){
 			return true;
 		}else{
-			if(iterPage.hasNext()){
+			while(iterPage.hasNext()){
 				iterTuple = ((HeapPage)(Database.getBufferPool().getPage(tid, iterPage.next().getId(), Permissions.READ_ONLY))).iterator();
-				return true;
-			}else{
-				return false;
+				if(iterTuple.hasNext())
+					return true;
+				else
+					iterTuple=null;
 			}
+			return false;
 		}
 	}
 
