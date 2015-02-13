@@ -82,7 +82,7 @@ public class Join extends Operator {
 		String ans = "";
 		try {
 			String tableName = Database.getCatalog().getTableName( children[1].next().getRecordId().getPageId().getTableId() );
-			String fieldName = children[1].getTupleDesc().getFieldName(p.getField1());
+			String fieldName = children[1].getTupleDesc().getFieldName(p.getField2());
 			 
 			ans = ( tableName + "." + fieldName );
 			children[1].close();
