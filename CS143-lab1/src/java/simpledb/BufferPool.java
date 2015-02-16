@@ -83,16 +83,17 @@ public class BufferPool {
 		{
 			if( cachedPages.size() >= numPages ) // buffer pool is full
 			{
-				throw new DbException("buffer pool is full");
+				//throw new DbException("buffer pool is full");
+				this.evictPage();
 			}
-			else // read page from disk and add to buffer pool's cachedPages
-			{
+			//else // read page from disk and add to buffer pool's cachedPages
+			//{
 				int tableId = pid.getTableId();
 				// use page's tableId to get corresponding DbFile from Catalog; then read desired page
 				Page thePage = Database.getCatalog().getDatabaseFile( tableId ).readPage(pid);
 				cachedPages.put( cachedPagesKey, thePage);
 				return thePage;
-			}
+			//}
 		}
         //return null;
     }
@@ -191,6 +192,10 @@ public class BufferPool {
     public synchronized void flushAllPages() throws IOException {
         // some code goes here
         // not necessary for lab1
+		for( int hc : this.cachedPages.keySet()  )
+		{
+			this.flushPage( this.cachedPages.get(hc).getId() );
+		}
 
     }
 
@@ -211,6 +216,12 @@ public class BufferPool {
     private synchronized  void flushPage(PageId pid) throws IOException {
         // some code goes here
         // not necessary for lab1
+		DbFile table = Database.getCatalog().getDatabaseFile( pid.getTableId() );
+		Page thePage = this.cachedPages.get( pid.hashCode() );
+		// write page to disk
+		table.writePage( thePage );
+		// page is not dirty
+		thePage.markDirty(false, null);
     }
 
     /** Write all pages of the specified transaction to disk.
@@ -227,6 +238,20 @@ public class BufferPool {
     private synchronized  void evictPage() throws DbException {
         // some code goes here
         // not necessary for lab1
+		int pidHc = this.cachedPages.keys().nextElement();
+		PageId pid = this.cachedPages.get(pidHc).getId();
+		try
+		{
+			if( this.cachedPages.get( pidHc ).isDirty() != null ) // page is dirty
+			{
+				this.flushPage(pid);
+			}
+		} catch(Exception e)
+		{
+			System.out.println("Failed to flush page to disk");
+		}
+		//actually evict page
+		this.cachedPages.remove( pidHc );
     }
 	
 }

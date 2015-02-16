@@ -98,6 +98,7 @@ ar HeapFile. We suggest hashing the absolute file name of the
 			
 			raf.seek(pos);			
 			raf.read(data);
+			raf.close();
 			
 			HeapPageId hpid = (HeapPageId) pid;
 			HeapPage thePage = new HeapPage(hpid, data);
@@ -126,6 +127,7 @@ ar HeapFile. We suggest hashing the absolute file name of the
 			
 			raf.seek(pos);
 			raf.write(data);
+			raf.close();
 			
 			//HeapPageId hpid = (HeapPageId) pid;
 			//HeapPage thePage = new HeapPage(hpid, data);
