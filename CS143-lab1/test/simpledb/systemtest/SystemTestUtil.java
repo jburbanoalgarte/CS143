@@ -157,7 +157,7 @@ public class SystemTestUtil {
         Runtime runtime = Runtime.getRuntime();
         long memAfter = runtime.totalMemory() - runtime.freeMemory();
         long memBefore = memAfter + 1;
-        while (memBefore != memAfter) {
+        while (memBefore != memAfter) { // until garbage collector frees all memory
             memBefore = memAfter;
             System.gc();
             memAfter = runtime.totalMemory() - runtime.freeMemory();

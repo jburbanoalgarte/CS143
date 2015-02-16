@@ -19,7 +19,7 @@ public class HeapFile implements DbFile{
 	*/
 	private File f;
 	private TupleDesc td;
-	private ArrayList<Page> pages;
+	private ArrayList<PageId> pages;
 	
     private ArrayList<Byte> pageLocks;
 	
@@ -233,10 +233,10 @@ ar HeapFile. We suggest hashing the absolute file name of the
     public DbFileIterator iterator(TransactionId tid) {
         // some code goes here
         //return null;
-    	pages = new ArrayList<Page>();
+    	pages = new ArrayList<PageId>();
     	for(int i=0; i<numPages();i++){
 			try{
-				pages.add(Database.getBufferPool().getPage(null, new HeapPageId(getId(),i), Permissions.READ_ONLY));
+				pages.add(Database.getBufferPool().getPage(null, new HeapPageId(getId(),i), Permissions.READ_ONLY).getId());
 			}catch(DbException e){
 				System.err.println("HeapFile.iterator: DbException");
 			}catch(TransactionAbortedException e){

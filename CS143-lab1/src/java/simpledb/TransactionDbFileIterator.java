@@ -10,11 +10,11 @@ import java.util.*;
 public class TransactionDbFileIterator implements DbFileIterator{
 	
 	private TransactionId tid = null;
-	private ArrayList<Page> pages = null;
-	private Iterator<Page> iterPage = null;
+	private ArrayList<PageId> pages = null;
+	private Iterator<PageId> iterPage = null;
 	private Iterator<Tuple> iterTuple = null;
 	
-	public TransactionDbFileIterator(TransactionId tid, ArrayList<Page> pages){
+	public TransactionDbFileIterator(TransactionId tid, ArrayList<PageId> pages){
 		this.tid = tid;
 		this.pages = pages;
 	}
@@ -23,7 +23,7 @@ public class TransactionDbFileIterator implements DbFileIterator{
 	public void open() throws DbException, TransactionAbortedException {
 		iterPage = pages.iterator();
 		while(iterPage.hasNext()){
-			iterTuple = ((HeapPage)(Database.getBufferPool().getPage(tid, iterPage.next().getId(), Permissions.READ_ONLY))).iterator();
+			iterTuple = ((HeapPage)(Database.getBufferPool().getPage(tid, iterPage.next(), Permissions.READ_ONLY))).iterator();
 			if(iterTuple.hasNext())
 				break;
 			else
@@ -41,7 +41,7 @@ public class TransactionDbFileIterator implements DbFileIterator{
 			return true;
 		}else{
 			while(iterPage.hasNext()){
-				iterTuple = ((HeapPage)(Database.getBufferPool().getPage(tid, iterPage.next().getId(), Permissions.READ_ONLY))).iterator();
+				iterTuple = ((HeapPage)(Database.getBufferPool().getPage(tid, iterPage.next(), Permissions.READ_ONLY))).iterator();
 				if(iterTuple.hasNext())
 					return true;
 				else

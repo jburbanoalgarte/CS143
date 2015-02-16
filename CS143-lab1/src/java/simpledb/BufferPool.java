@@ -160,7 +160,7 @@ public class BufferPool {
         throws DbException, IOException, TransactionAbortedException {
         // some code goes here
         // not necessary for lab1
-		HeapFile table = (HeapFile) Database.getCatalog().getDatabaseFile(tableId);
+		DbFile table = Database.getCatalog().getDatabaseFile(tableId);
 		table.insertTuple(tid, t);
     }
 
@@ -180,7 +180,7 @@ public class BufferPool {
         throws DbException, IOException, TransactionAbortedException {
         // some code goes here
         // not necessary for lab1
-		HeapFile table = (HeapFile) Database.getCatalog().getDatabaseFile( t.getRecordId().getPageId().getTableId() );
+		DbFile table = Database.getCatalog().getDatabaseFile( t.getRecordId().getPageId().getTableId() );
 		table.deleteTuple(tid, t);
     }
 
@@ -194,6 +194,7 @@ public class BufferPool {
         // not necessary for lab1
 		for( int hc : this.cachedPages.keySet()  )
 		{
+			//System.out.println("BufferPool.flushAllPages: key: "+hc);
 			this.flushPage( this.cachedPages.get(hc).getId() );
 		}
 
@@ -240,17 +241,18 @@ public class BufferPool {
         // not necessary for lab1
 		int pidHc = this.cachedPages.keys().nextElement();
 		PageId pid = this.cachedPages.get(pidHc).getId();
-		try
+		//System.out.println("BufferPool.evictPage: key: "+pidHc);
+		if( this.cachedPages.get( pidHc ).isDirty() != null ) // if page is dirty
 		{
-			if( this.cachedPages.get( pidHc ).isDirty() != null ) // page is dirty
-			{
+			try{
 				this.flushPage(pid);
+			} catch(IOException e)
+			{
+				System.out.println("Failed to flush page to disk");
 			}
-		} catch(Exception e)
-		{
-			System.out.println("Failed to flush page to disk");
-		}
+    	}
 		//actually evict page
+		//System.out.println("BufferPool.evictPages: cachedPages.size: "+cachedPages.size());
 		this.cachedPages.remove( pidHc );
     }
 	
