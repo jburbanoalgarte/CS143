@@ -1,0 +1,114 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Short Sectioned Assignment
+% LaTeX Template
+% Version 1.0 (5/5/12)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+\usepackage[margin=0.5in]{geometry}
+\renewcommand{\thesection}{\Roman{section}}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage{fourier} % Use the Adobe Utopia font for the document - comment this line to return to the LaTeX default
+\usepackage[english]{babel} % English language/hyphenation
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+
+\usepackage{sectsty} % Allows customizing section commands
+\allsectionsfont{\centering \normalfont\scshape} % Make all sections centered, the default font and small caps
+
+\usepackage{fancyhdr} % Custom headers and footers
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{} % Empty center footer
+\fancyfoot[R]{\thepage} % Page numbering for right footer
+\renewcommand{\headrulewidth}{0pt} % Remove header underlines
+\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
+\setlength{\headheight}{13.6pt} % Customize the height of the header
+
+\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+
+\setlength\parindent{10pt} % Removes all indentation from paragraphs - comment this line for an assignment with lots of text
+\setlength{\parskip}{\baselineskip}%
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+\title{	
+\normalfont \normalsize \textsc{CS 143, Winter 2015}
+\horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
+\huge Lab 2 Write-Up \\ % The assignment title
+\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
+}
+
+\author{Jordi Burbano (204 076 325), Keisuke Daimon (604 547 017)} % Your name
+
+\date{\normalsize\today} % Today's date or a custom date
+
+\begin{document}
+
+\maketitle % Print the title
+
+%----------------------------------------------------------------------------------------
+%	Design Decisions
+%----------------------------------------------------------------------------------------
+
+\section{Design Decisions}
+
+The BufferPool class uses an LRU eviction policy. This is implemented using a LinkedList<Integer> of the hash codes that are the keys to the cachedPages hash map (which maps int hash codes to Page objects); these hash codes are listed from the least recently used page at the head to the most recently used page at the end. Updating the linked list occurs when a page is referenced in BufferPool.getPage() so that it moves to the end of the linked list as the most recently page. It also occurs during BufferPool.evictPage() when the evicted page's hash code is removed from the linked list. BufferPool.evictPage() simply refers to the hash code at the head of the linked list to remove the corresponding page from the buffer pool's hash map.
+
+
+
+%----------------------------------------------------------------------------------------
+%	Changes to the API
+%----------------------------------------------------------------------------------------
+
+\section{Changes to the API}
+
+We made no changes to the API.
+
+
+
+%----------------------------------------------------------------------------------------
+%	Missing or Incomplete Elements of Our Code
+%----------------------------------------------------------------------------------------
+
+\section{Missing or Incomplete Elements of Our Code}
+
+For the methods getJoinField1Name() and getJoinField2Name() in Join.java, we are able to access a table's name by consulting Catalog.getTableName(). However, we did not know how to access the alias name as described by the requirement that field names should be quantified by alias or table name.
+
+
+
+%----------------------------------------------------------------------------------------
+%	Logistics
+%----------------------------------------------------------------------------------------
+
+\section{Logistics}
+
+We spent approximately 25 man-hours on the project.
+
+We spent a significant amount of time trying to pass the EvictionTest system test. First, we discovered an issue attributable to not closing RandomAccessFile objects when reading or writing pages. Afterwards, much time was spent on overcoming an error that stated that 80 MB of RAM were being used when the limit was 5 MB. This error was related to our previous implementation of TransactionFileDbIterator, which stored all the pages in an ArrayList<Page>. To consume less memory, TransactionFileDbIterator now stores an ArrayList<PageId>; this change reduced the consumption of RAM to 1 MB.
+
+
+\end{document}
