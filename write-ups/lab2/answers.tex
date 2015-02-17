@@ -98,6 +98,8 @@ We made no changes to the API.
 
 For the methods getJoinField1Name() and getJoinField2Name() in Join.java, we are able to access a table's name by consulting Catalog.getTableName(). However, we did not know how to access the alias name as described by the requirement that field names should be quantified by alias or table name.
 
+There were also issues with running the query parser. For simple queries, such as "select d.f1 from data d;", an exception was thrown stating something like "simpledb.ParsingException: Unknown field d.f1 from SELECT list". It was uncertain whether this was attributable to an error in our implementation, such as the SeqScan class, or an error in the query parser.
+
 
 
 %----------------------------------------------------------------------------------------
