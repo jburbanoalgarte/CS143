@@ -3,6 +3,7 @@ package simpledb;
 import java.io.*;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.LinkedList;
 
 /**
  * BufferPool manages the reading and writing of pages into memory from
@@ -36,6 +37,11 @@ public class BufferPool {
 	*/
 	private ConcurrentHashMap<Integer, Page> cachedPages = null;
 	
+	/*
+		Stores hash code key of this.cachedPages in order of LRU to MRU.
+	*/
+	private LinkedList<Integer> lruToMru = null;
+	
     /**
      * Creates a BufferPool that caches up to numPages pages.
      *
@@ -45,6 +51,7 @@ public class BufferPool {
         // some code goes here
 		this.numPages = numPages;
 		this.cachedPages = new ConcurrentHashMap<Integer, Page>();
+		this.lruToMru = new LinkedList<Integer>();
     }
     
     public static int getPageSize() {
@@ -77,6 +84,9 @@ public class BufferPool {
 		int cachedPagesKey = pid.hashCode();
 		if( cachedPages.containsKey(cachedPagesKey) )
 		{
+			//referenced page becomes MRU
+			this.lruToMru.remove(new Integer(cachedPagesKey));
+			this.lruToMru.add(cachedPagesKey);
 			return cachedPages.get(cachedPagesKey);
 		}
 		else // page is not cached
@@ -84,7 +94,7 @@ public class BufferPool {
 			if( cachedPages.size() >= numPages ) // buffer pool is full
 			{
 				//throw new DbException("buffer pool is full");
-				this.evictPage();
+				this.evictPage(); //also removes evictedPage hash code in this.lruToMru
 			}
 			//else // read page from disk and add to buffer pool's cachedPages
 			//{
@@ -92,6 +102,9 @@ public class BufferPool {
 				// use page's tableId to get corresponding DbFile from Catalog; then read desired page
 				Page thePage = Database.getCatalog().getDatabaseFile( tableId ).readPage(pid);
 				cachedPages.put( cachedPagesKey, thePage);
+				//referenced page becomes MRU
+				this.lruToMru.remove(new Integer(cachedPagesKey));
+				this.lruToMru.add(cachedPagesKey);
 				return thePage;
 			//}
 		}
@@ -239,7 +252,7 @@ public class BufferPool {
     private synchronized  void evictPage() throws DbException {
         // some code goes here
         // not necessary for lab1
-		int pidHc = this.cachedPages.keys().nextElement();
+		int pidHc = this.lruToMru.get(0);
 		PageId pid = this.cachedPages.get(pidHc).getId();
 		//System.out.println("BufferPool.evictPage: key: "+pidHc);
 		if( this.cachedPages.get( pidHc ).isDirty() != null ) // if page is dirty
@@ -251,6 +264,8 @@ public class BufferPool {
 				System.out.println("Failed to flush page to disk");
 			}
     	}
+		//remove evicted page's hash code from this.lruToMru
+		this.lruToMru.remove(new Integer(pidHc));
 		//actually evict page
 		//System.out.println("BufferPool.evictPages: cachedPages.size: "+cachedPages.size());
 		this.cachedPages.remove( pidHc );
