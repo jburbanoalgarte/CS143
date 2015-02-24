@@ -64,7 +64,7 @@
 
 \author{Jordi Burbano (204 076 325), Keisuke Daimon (604 547 017)} % Your name
 
-\date{\normalsize\today} % Today's date or a custom date
+\date{\normalsize 16 February 2015} % Today's date or a custom date
 
 \begin{document}
 
@@ -98,8 +98,6 @@ We made no changes to the API.
 
 For the methods getJoinField1Name() and getJoinField2Name() in Join.java, we are able to access a table's name by consulting Catalog.getTableName(). However, we did not know how to access the alias name as described by the requirement that field names should be quantified by alias or table name.
 
-There were also issues with running the query parser. For simple queries, such as "select d.f1 from data d;", an exception was thrown stating something like "simpledb.ParsingException: Unknown field d.f1 from SELECT list". It was uncertain whether this was attributable to an error in our implementation, such as the SeqScan class, or an error in the query parser.
-
 
 
 %----------------------------------------------------------------------------------------
@@ -111,6 +109,8 @@ There were also issues with running the query parser. For simple queries, such a
 We spent approximately 25 man-hours on the project.
 
 We spent a significant amount of time trying to pass the EvictionTest system test. First, we discovered an issue attributable to not closing RandomAccessFile objects when reading or writing pages. Afterwards, much time was spent on overcoming an error that stated that 80 MB of RAM were being used when the limit was 5 MB. This error was related to our previous implementation of TransactionFileDbIterator, which stored all the pages in an ArrayList<Page>. To consume less memory, TransactionFileDbIterator now stores an ArrayList<PageId>; this change reduced the consumption of RAM to 1 MB.
+
+There were also issues with running the query parser. For simple queries, such as "select d.f1 from data d;", an exception was thrown, stating something like "simpledb.ParsingException: Unknown field d.f1 from SELECT list". To resolve this issue, we modified SeqScan.getTupleDesc() so that the table alias was added in front of each field name.
 
 
 \end{document}
