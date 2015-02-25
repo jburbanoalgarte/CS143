@@ -20,7 +20,9 @@ public class StringHistogram {
     private int stringToInt(String s) {
         int i ;
         int v = 0;
-        for (i = 3; i >= 0;i--) {
+        //use the first 4 letters
+        //int v = (int) (s.charAt[3] + s.charAt[2] + s.charAt[1] + s.charAt[0])
+        for (i = 3; i >= 0;i--) { 
             if (s.length() > 3-i) {
                 int ci = (int)s.charAt(3-i);
                 v += (ci) << (i * 8);
@@ -44,12 +46,12 @@ public class StringHistogram {
 
     /** @return the maximum value indexed by the histogram */
     int maxVal() {
-        return stringToInt("zzzz");
+        return stringToInt("zzzz"); //2054847098
     }
 
     /** @return the minimum value indexed by the histogram */
     int minVal() {
-        return stringToInt("");
+        return stringToInt(""); //0
     }
 
     /** Add a new value to thte histogram */
@@ -78,5 +80,15 @@ public class StringHistogram {
     public double avgSelectivity()
     {
         return hist.avgSelectivity();
+    }
+    
+    /**
+     * For test
+     * @param args
+     */
+    public static void main(String[] args){
+    	StringHistogram sh=new StringHistogram(100);
+    	System.out.println(sh.maxVal());
+    	System.out.println(sh.minVal());
     }
 }

@@ -45,6 +45,8 @@ public class Join extends Operator {
     public String getJoinField1Name() {
         // some code goes here
         //return null;
+    	
+    	/*
 		try {
 			children[0].open();
 		} catch(Exception e)
@@ -63,6 +65,8 @@ public class Join extends Operator {
 			System.out.println("Exception: Failed to access next tuple in Join.getField1Name()");
 		}
 		return ans;
+		*/
+    	return children[0].getTupleDesc().getFieldName(p.getField1());
     }
 
     /**
@@ -73,6 +77,7 @@ public class Join extends Operator {
     public String getJoinField2Name() {
         // some code goes here
         //return null;
+    	/*
 		try {
 			children[1].open();
 		} catch(Exception e)
@@ -91,6 +96,9 @@ public class Join extends Operator {
 			System.out.println("Exception: Failed to access next tuple in Join.getField2Name()");
 		}
 		return ans;
+		*/
+    	return children[1].getTupleDesc().getFieldName(p.getField2());
+    	
     }
 
     /**

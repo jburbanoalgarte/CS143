@@ -4,6 +4,12 @@ package simpledb;
  */
 public class IntHistogram {
 
+	private int buckets;
+	private int min;
+	private int max;
+	private double width;
+	private int[][] hist = null; //hist[0][1]=ntups
+	
     /**
      * Create a new IntHistogram.
      * 
@@ -22,6 +28,15 @@ public class IntHistogram {
      */
     public IntHistogram(int buckets, int min, int max) {
     	// some code goes here
+    	this.buckets=buckets;
+    	this.min=min;
+    	this.max=max;
+    	this.width=(max-(min-1))/((double)this.buckets);
+    	
+    	this.hist=new int[this.buckets+1][2];
+    	for(int i=0;i<this.hist.length;i++){
+    		this.hist[i]=new int[]{(min-1)+(int)Math.round(width*i),0};
+    	}
     }
 
     /**
@@ -30,6 +45,14 @@ public class IntHistogram {
      */
     public void addValue(int v) {
     	// some code goes here
+    	for(int i=1;i<hist.length;i++){
+    		if(v<=hist[i][0]){
+    			hist[i][1]++;
+    			hist[0][1]++; //ntups
+    			return;
+    		}
+    	}
+    	System.out.println("IntHistgram.addValue: Should not be reached");
     }
 
     /**
@@ -45,7 +68,110 @@ public class IntHistogram {
     public double estimateSelectivity(Predicate.Op op, int v) {
 
     	// some code goes here
-        return -1.0;
+        //return -1.0;
+    	if(op.toString()=="="||op.toString()=="LIKE"){
+    		if(v<min){
+    			return 0.0;
+    		}else if(v>max){
+    			return 0.0;
+    		}
+    		for(int i=1;i<hist.length;i++){
+    			if(v<=hist[i][0]){
+    				return hist[i][1]/width/hist[0][1];	
+    			}
+    		}
+    		System.out.println("IntHistgram.estimateSelectivity.=: Should not be reached");
+    	}else if(op.toString()==">"){
+    		if(v<min){
+    			return 1.0;
+    		}else if(v>=max){
+    			return 0.0;
+    		}
+    		boolean found=false;
+    		double selectivityNumerator=0;
+    		for(int i=1;i<hist.length;i++){
+    			if(found){
+    				selectivityNumerator+=hist[i][1];
+    			}else if(v<=hist[i][0]){
+    				selectivityNumerator+=(hist[i][1]*(hist[i][0]-v)/width);
+    				found=true;
+    			}
+    		}
+    		return selectivityNumerator/hist[0][1];
+    		
+    	}else if(op.toString()==">="){
+    		if(v<=min){
+    			return 1.0;
+    		}else if(v>max){
+    			return 0.0;
+    		}
+    		boolean found=false;
+    		double selectivityNumerator=0;
+    		for(int i=1;i<hist.length;i++){
+    			if(found){
+    				selectivityNumerator+=hist[i][1];
+    			}else if(v<=hist[i][0]){
+    				selectivityNumerator+=(hist[i][1]*(hist[i][0]-(v-1))/width);
+    				found=true;
+    			}
+    		}
+    		return selectivityNumerator/hist[0][1];
+    		
+    	}else if(op.toString()=="<"){
+    		if(v<=min){
+    			return 0.0;
+    		}else if(v>max){
+    			return 1.0;
+    		}
+    		boolean found=false;
+    		double selectivityNumerator=0;
+    		for(int i=hist.length-1;i>0;i--){
+    			if(found){
+    				selectivityNumerator+=hist[i][1];
+    			}else if(v>hist[i-1][0]){
+    				selectivityNumerator+=(hist[i][1]*(hist[i][0]-v)/width);
+    				found=true;
+    			}
+    		}
+    		return selectivityNumerator/hist[0][1];
+    		
+    	}else if(op.toString()=="<="){
+    		if(v<min){
+    			return 0.0;
+    		}else if(v>=max){
+    			return 1.0;
+    		}
+    		boolean found=false;
+    		double selectivityNumerator=0;
+    		for(int i=hist.length-1;i>0;i--){
+    			if(found){
+    				selectivityNumerator+=hist[i][1];
+    			}else if(v>hist[i-1][0]){
+    				selectivityNumerator+=(hist[i][1]*(hist[i][0]-(v-1))/width);
+    				found=true;
+    			}
+    		}
+    		return selectivityNumerator/hist[0][1];
+    		
+    	}else if(op.toString()=="<>"){
+    		if(v<=min||v>=max){
+    			return 1.0;
+    		}
+    		for(int i=1;i<hist.length;i++){
+    			if(v<=hist[i][0]){
+    				return (hist[0][1]-hist[i][1]/width)/hist[0][1];
+    			}
+    		}
+    	}
+    	
+    	try{
+    		throw new IllegalArgumentException();
+    	}catch(IllegalArgumentException e){
+    		e.printStackTrace();
+    	}
+    	
+    	System.out.println("IntHistgram.estimateSelectivity: Should not be reached");
+    	return -1.0;
     }
     
     /**
@@ -68,6 +194,17 @@ public class IntHistogram {
     public String toString() {
 
         // some code goes here
-        return null;
+        //return null;
+    	
+    	//can be heavy
+    	StringBuilder sb=new StringBuilder();
+    	for(int i=0;i<this.hist.length;i++){
+    		sb.append(this.hist[i][0]);
+    		sb.append("\t");
+    		sb.append(this.hist[i][1]);
+    		sb.append("\n");
+    	}
+    	return sb.toString();
+    	
     }
 }

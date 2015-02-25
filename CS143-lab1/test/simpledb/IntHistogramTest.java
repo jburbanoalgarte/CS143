@@ -13,6 +13,7 @@ public class IntHistogramTest {
 	 * your constants are good).
 	 */
 	@Test public void orderOfGrowthTest() {
+		System.out.println("IntHistogramTest.orderOfGrowthTest");
 		// Don't bother with a timeout on this test.
 		// Printing debugging statements takes >> time than some inefficient algorithms.
 		IntHistogram h = new IntHistogram(10000, 0, 100);
@@ -41,6 +42,7 @@ public class IntHistogramTest {
 	 * Test with a minimum and a maximum that are both negative numbers.
 	 */
 	@Test public void negativeRangeTest() {
+		System.out.println("IntHistogramTest.negativeRangeTst");
 		IntHistogram h = new IntHistogram(10, -60, -10);
 		
 		// All of the values here are negative.
@@ -64,6 +66,7 @@ public class IntHistogramTest {
 	 * Make sure that equality binning does something reasonable.
 	 */
 	@Test public void opEqualsTest() {
+		System.out.println("IntHistogramTest.opEqualsTest");
 		IntHistogram h = new IntHistogram(10, 1, 10);
 		
 		// Set some values
@@ -81,6 +84,7 @@ public class IntHistogramTest {
 	 * Make sure that GREATER_THAN binning does something reasonable.
 	 */
 	@Test public void opGreaterThanTest() {
+		System.out.println("IntHistogramTest.opGreaterThanTest");
 		IntHistogram h = new IntHistogram(10, 1, 10);
 		
 		// Set some values
@@ -101,6 +105,7 @@ public class IntHistogramTest {
 	 * Make sure that LESS_THAN binning does something reasonable.
 	 */
 	@Test public void opLessThanTest() {
+		System.out.println("IntHistogramTest.opLessThanTest");
 		IntHistogram h = new IntHistogram(10, 1, 10);
 		
 		// Set some values
@@ -121,6 +126,7 @@ public class IntHistogramTest {
 	 * Make sure that GREATER_THAN_OR_EQ binning does something reasonable.
 	 */
 	@Test public void opGreaterThanOrEqualsTest() {
+		System.out.println("IntHistogramTest.opGreaterThanOrEqualsTest");
 		IntHistogram h = new IntHistogram(10, 1, 10);
 		
 		// Set some values
@@ -142,6 +148,7 @@ public class IntHistogramTest {
 	 * Make sure that LESS_THAN_OR_EQ binning does something reasonable.
 	 */
 	@Test public void opLessThanOrEqualsTest() {
+		System.out.println("IntHistogramTest.opLessThanOrEqualsTest");
 		IntHistogram h = new IntHistogram(10, 1, 10);
 		
 		// Set some values
@@ -163,15 +170,18 @@ public class IntHistogramTest {
 	 * Make sure that equality binning does something reasonable.
 	 */
 	@Test public void opNotEqualsTest() {
+		System.out.println("IntHistogramTest.opNotEqualsTest");
 		IntHistogram h = new IntHistogram(10, 1, 10);
 		
 		// Set some values
 		h.addValue(3);
 		h.addValue(3);
 		h.addValue(3);
-		
+		System.out.println(h.toString());
 		// Be conservative in case of alternate implementations
+		System.out.println("IntHistogramTest.opNotEqualsTest.3: "+h.estimateSelectivity(Op.NOT_EQUALS, 3));
 		Assert.assertTrue(h.estimateSelectivity(Op.NOT_EQUALS, 3) < 0.001);
+		System.out.println("IntHistogramTest.opNotEqualsTest.8: "+h.estimateSelectivity(Op.NOT_EQUALS, 8));
 		Assert.assertTrue(h.estimateSelectivity(Op.NOT_EQUALS, 8) > 0.01);
 	}
 }
