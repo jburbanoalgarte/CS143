@@ -80,7 +80,7 @@ public class IntHistogram {
     				return hist[i][1]/width/hist[0][1];	
     			}
     		}
-    		System.out.println("IntHistgram.estimateSelectivity.=: Should not be reached");
+    		System.out.println("IntHistogram.estimateSelectivity.=: Should not be reached");
     	}else if(op.toString()==">"){
     		if(v<min){
     			return 1.0;
@@ -170,7 +170,7 @@ public class IntHistogram {
     		e.printStackTrace();
     	}
     	
-    	System.out.println("IntHistgram.estimateSelectivity: Should not be reached");
+    	System.out.println("IntHistogram.estimateSelectivity: Should not be reached");
     	return -1.0;
     }
     

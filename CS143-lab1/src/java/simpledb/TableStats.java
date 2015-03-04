@@ -13,6 +13,24 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class TableStats {
 
+	// need:
+	// numPages
+	private int tableid; // done
+	
+	// ioCostPerPage
+	private int ioCostPerPage; // done
+	
+	// numTuples
+	private int numTuples = 0; // done
+	
+	// int or string histogram for each field
+	// IntHistogram(int buckets, int min, int max)
+	// StringHistogram(int buckets)
+	// addValue(int v)
+	// addValue(String s)
+	private HashMap<String, IntHistogram> intHistograms; // done
+	private HashMap<String, StringHistogram> stringHistograms; // done
+
     private static final ConcurrentHashMap<String, TableStats> statsMap = new ConcurrentHashMap<String, TableStats>();
 
     static final int IOCOSTPERPAGE = 1000;
@@ -85,6 +103,115 @@ public class TableStats {
         // necessarily have to (for example) do everything
         // in a single scan of the table.
         // some code goes here
+		
+		this.tableid = tableid;
+		this.ioCostPerPage = ioCostPerPage;
+		
+		DbFile theFile = Database.getCatalog().getDatabaseFile(tableid);
+		DbFileIterator iter = theFile.iterator(new TransactionId());
+		TupleDesc td = theFile.getTupleDesc();
+		//TupleDesc td = Database.getCatalog().getTupleDesc(tableid);
+	
+		// find min, max values for each field
+		// solely used to initialize histogram for each field
+		// if field has type Type.STRING_TYPE, then these vals are irrelevant
+		HashMap<String, Integer> mins = new HashMap<String, Integer>();
+		HashMap<String, Integer> maxs = new HashMap<String, Integer>();
+		
+		this.intHistograms = new HashMap<String, IntHistogram>();
+		this.stringHistograms = new HashMap<String, StringHistogram>();
+		
+		try {
+			iter.open();
+			Tuple tup;
+			// integrate tup's field values into current min, max values
+			while( iter.hasNext() ) {
+			
+				tup = iter.next();
+				this.numTuples++;
+				
+				// determine each of tup's int field values
+				for (int i=0; i < td.numFields(); i++) {
+				
+					// string min, max vals are irrelevant
+					if( td.getFieldType(i) == Type.INT_TYPE ) {
+				
+						String fieldname = td.getFieldName(i);
+						int fieldval = ( (IntField) tup.getField(i) ).getValue();
+						
+						// adjust min
+						if ( !mins.containsKey(fieldname) ) {
+							mins.put(fieldname, fieldval);
+						}
+						else {
+							int currentMin = mins.get(fieldname);
+							if ( fieldval < currentMin ) {
+								mins.put(fieldname, fieldval);
+							}//end if
+						}//end if-else
+						
+						// adjust max
+						if ( !maxs.containsKey(fieldname) ) {
+							maxs.put(fieldname, fieldval);
+						}
+						else {
+							int currentMax = maxs.get(fieldname);
+							if ( fieldval > currentMax ) {
+								maxs.put(fieldname, fieldval);
+							}//end if
+						}//end if-else
+						
+					} //end if	
+				
+				}//end for
+			
+			}//end while
+			//iter.rewind();
+			iter.close();
+			iter.open();
+			
+			// intHistograms and stringHistograms			
+			
+			
+			// initialize intHistograms and stringHistograms
+			for (int i=0; i < td.numFields(); i++) {
+			
+				String fieldname = td.getFieldName(i);
+				
+				if ( td.getFieldType(i) == Type.INT_TYPE ) {
+				
+					this.intHistograms.put( fieldname, new IntHistogram( TableStats.NUM_HIST_BINS, mins.get(fieldname), maxs.get(fieldname) ) );
+				}
+				else {
+					this.stringHistograms.put( fieldname, new StringHistogram( TableStats.NUM_HIST_BINS ) );
+				}
+			
+			}//end for
+			
+			// populate histograms
+			while( iter.hasNext() ) {
+			
+				tup = iter.next();
+				
+				for (int i=0; i < td.numFields(); i++) {
+			
+					String fieldname = td.getFieldName(i);
+					
+					if ( td.getFieldType(i) == Type.INT_TYPE ) {
+					
+						this.intHistograms.get(fieldname).addValue( ( (IntField) tup.getField(i) ).getValue() );
+					}
+					else {
+						this.stringHistograms.get(fieldname).addValue( ( (StringField) tup.getField(i) ).getValue() );
+					}
+			
+				}//end for
+			
+			}//end while
+			iter.close();
+		} catch (Exception e) {
+			System.err.println("Exception: TableStats constructor: " + e);
+		}//end try-catch
     }
 
     /**
@@ -101,7 +228,10 @@ public class TableStats {
      */
     public double estimateScanCost() {
         // some code goes here
-        return 0;
+        //return 0;
+		// use HeapFile.numPages()
+		int numPages = ( (HeapFile) Database.getCatalog().getDatabaseFile(this.tableid) ).numPages();
+		return this.ioCostPerPage * numPages;
     }
 
     /**
@@ -115,7 +245,8 @@ public class TableStats {
      */
     public int estimateTableCardinality(double selectivityFactor) {
         // some code goes here
-        return 0;
+        //return 0;
+		return (int) (selectivityFactor * this.numTuples);
     }
 
     /**
@@ -148,7 +279,16 @@ public class TableStats {
      */
     public double estimateSelectivity(int field, Predicate.Op op, Field constant) {
         // some code goes here
-        return 1.0;
+        //return 1.0;
+		TupleDesc td = Database.getCatalog().getDatabaseFile(this.tableid).getTupleDesc();
+		String fieldname = td.getFieldName(field);
+		
+		if ( td.getFieldType(field) == Type.INT_TYPE ) {
+			return this.intHistograms.get(fieldname).estimateSelectivity(op, ( (IntField) constant ).getValue() );
+		}
+		else {
+			return this.stringHistograms.get(fieldname).estimateSelectivity(op, ( (StringField) constant ).getValue() );
+		}
     }
 
     /**
@@ -156,7 +296,8 @@ public class TableStats {
      * */
     public int totalTuples() {
         // some code goes here
-        return 0;
+        //return 0;
+		return this.numTuples;
     }
 
 }
