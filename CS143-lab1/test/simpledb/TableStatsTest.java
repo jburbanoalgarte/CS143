@@ -107,6 +107,7 @@ public class TableStatsTest extends SimpleDbTestBase {
 	 * IntHistogramTest, so we hopefully don't need all the JUnit checkboxes.
 	 */
 	@Test public void estimateSelectivityTest() {
+		System.out.println("TableStatsTest.estimateSelectivityTest");
 		final int maxCellVal = 32;	// Tuple values are randomized between 0 and this number
 		
 		final Field aboveMax = new IntField(maxCellVal + 10);
@@ -118,7 +119,8 @@ public class TableStatsTest extends SimpleDbTestBase {
 		TableStats s = new TableStats(this.tableId, IO_COST);
 		
 		for (int col = 0; col < 10; col++) {
-			Assert.assertEquals(0.0, s.estimateSelectivity(col, Predicate.Op.EQUALS, aboveMax), 0.001);			
+			System.out.println("TableStatsTest.estimateSelectivityTest.col: "+col);
+			Assert.assertEquals(0.0, s.estimateSelectivity(col, Predicate.Op.EQUALS, aboveMax), 0.001);	
 			Assert.assertEquals(1.0/32.0, s.estimateSelectivity(col, Predicate.Op.EQUALS, halfMaxMin), 0.015);
 			Assert.assertEquals(0, s.estimateSelectivity(col, Predicate.Op.EQUALS, belowMin), 0.001);
 

@@ -77,7 +77,7 @@ public class IntHistogram {
     		}
     		for(int i=1;i<hist.length;i++){
     			if(v<=hist[i][0]){
-    				return hist[i][1]/width/hist[0][1];	
+    				return hist[i][1]/(width<1?1:width)/hist[0][1];	
     			}
     		}
     		System.out.println("IntHistogram.estimateSelectivity.=: Should not be reached");
@@ -111,7 +111,7 @@ public class IntHistogram {
     			if(found){
     				selectivityNumerator+=hist[i][1];
     			}else if(v<=hist[i][0]){
-    				selectivityNumerator+=(hist[i][1]*(hist[i][0]-(v-1))/width);
+    				selectivityNumerator+=(hist[i][1]*(hist[i][0]-(v-(width<1?width:1)))/width);
     				found=true;
     			}
     		}
@@ -147,7 +147,7 @@ public class IntHistogram {
     			if(found){
     				selectivityNumerator+=hist[i][1];
     			}else if(v>hist[i-1][0]){
-    				selectivityNumerator+=(hist[i][1]*(hist[i][0]-(v-1))/width);
+    				selectivityNumerator+=(hist[i][1]*(hist[i][0]-(v-(width<1?width:1)))/width);
     				found=true;
     			}
     		}
@@ -159,7 +159,7 @@ public class IntHistogram {
     		}
     		for(int i=1;i<hist.length;i++){
     			if(v<=hist[i][0]){
-    				return (hist[0][1]-hist[i][1]/width)/hist[0][1];
+    				return (hist[0][1]-hist[i][1]/(width<1?1:width))/hist[0][1];
     			}
     		}
     	}

@@ -12,6 +12,7 @@ public class IntHistogramTest {
 	 * (or, at least, reasonably small space; O(log(n)) might still work if
 	 * your constants are good).
 	 */
+	
 	@Test public void orderOfGrowthTest() {
 		System.out.println("IntHistogramTest.orderOfGrowthTest");
 		// Don't bother with a timeout on this test.
