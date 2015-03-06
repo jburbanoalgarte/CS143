@@ -166,13 +166,9 @@ public class TableStats {
 				}//end for
 			
 			}//end while
-			//iter.rewind();
-			iter.close();
-			iter.open();
+			iter.rewind();
 			
 			// intHistograms and stringHistograms			
-			
-			
 			// initialize intHistograms and stringHistograms
 			for (int i=0; i < td.numFields(); i++) {
 			
@@ -198,7 +194,7 @@ public class TableStats {
 					String fieldname = td.getFieldName(i);
 					
 					if ( td.getFieldType(i) == Type.INT_TYPE ) {
-					
+						
 						this.intHistograms.get(fieldname).addValue( ( (IntField) tup.getField(i) ).getValue() );
 					}
 					else {

@@ -78,6 +78,7 @@ public class JoinOptimizerTest extends SimpleDbTestBase {
 		for(int i = 0; i < card1s.length; ++i) {
 			ret[i] = jo.estimateJoinCost(js, card1s[i], card2s[i], cost1s[i], cost2s[i]);
 			//assert that he join cost is no less than the total cost of scanning two tables
+			//System.out.println("JoinOptimizerTest.getRandomJoinCosts: "+i+" "+ret[i]);
 			Assert.assertTrue(ret[i] > cost1s[i] + cost2s[i]);
 		}
 		return ret;
@@ -88,6 +89,7 @@ public class JoinOptimizerTest extends SimpleDbTestBase {
 	 * we check various order requirements for the output of estimateJoinCost.
 	 */
 	@Test public void estimateJoinCostTest() throws ParsingException {
+		System.out.println("JoinOptimizerTest.estimateJoinCostTest");
 		// It's hard to narrow these down much at all, because students 
 		// may have implemented custom join algorithms.
 		// So, just make sure the orders of the return values make sense.
@@ -165,6 +167,7 @@ public class JoinOptimizerTest extends SimpleDbTestBase {
 	 * Verify that the join cardinalities produced by estimateJoinCardinality() are reasonable
 	 */
 	@Test public void estimateJoinCardinality() throws ParsingException {
+		System.out.println("JoinOptimizerTest.estimateJoinCardinality");
         TransactionId tid = new TransactionId();
         Parser p = new Parser();
 		JoinOptimizer j = new JoinOptimizer(p.generateLogicalPlan(tid, "SELECT * FROM " + tableName2 + " t1, " + tableName2 + " t2 WHERE t1.c8 = t2.c7;"), 
@@ -207,6 +210,7 @@ public class JoinOptimizerTest extends SimpleDbTestBase {
 	 * and not taking an unreasonable amount of time to do so 
 	 */
 	@Test public void orderJoinsTest() throws ParsingException, IOException, DbException, TransactionAbortedException {
+		System.out.println("JoinOptimizerTest.orderJoinsTest");
 		// This test is intended to approximate the join described in the
 		// "Query Planning" section of 2009 Quiz 1,
 		// though with some minor variation due to limitations in simpledb
@@ -288,6 +292,7 @@ public class JoinOptimizerTest extends SimpleDbTestBase {
 	 * Test a much-larger join ordering, to confirm that it executes in a reasonable amount of time
 	 */
 	@Test(timeout=60000) public void bigOrderJoinsTest() throws IOException, DbException, TransactionAbortedException, ParsingException {
+		System.out.println("JoinOptimizerTest.bigOrderJoinsTest");
 		final int IO_COST = 103;
 		
 		JoinOptimizer j;
@@ -411,6 +416,7 @@ public class JoinOptimizerTest extends SimpleDbTestBase {
 	 * as the innermost join
 	 */
 	@Test public void nonequalityOrderJoinsTest() throws IOException, DbException, TransactionAbortedException, ParsingException {
+		System.out.println("JoinOptimizerTest.nonequalityOrderJoinsTest");
 		final int IO_COST = 103;
 		
 		JoinOptimizer j;
@@ -458,12 +464,18 @@ public class JoinOptimizerTest extends SimpleDbTestBase {
 		
 		// Set the last boolean here to 'true' in order to have orderJoins() print out its logic
 		result = j.orderJoins(stats, filterSelectivities, false);
+		System.out.println("JoinOptimizerTest.nonequalityOrderJoinsTest.result");
+		for(int i=0;i<result.size();i++){
+			System.out.println(result.get(i).t1Alias+" "+result.get(i).t2Alias);
+		}
 		
 		// If you're only re-ordering the join nodes,
 		// you shouldn't end up with more than you started with
 		Assert.assertEquals(result.size(), nodes.size());
 		
 		// Make sure that "a" is the outermost table in the join
+		System.out.println("JoinOptimizerTest.nonequalityOrderJoinsTest.result.get(result.size() - 1).t2Alias: "+result.get(result.size() - 1).t2Alias);
+		System.out.println("JoinOptimizerTest.nonequalityOrderJoinsTest.result.get(result.size() - 1).t1Alias: "+result.get(result.size() - 1).t1Alias);
 		Assert.assertTrue(result.get(result.size() - 1).t2Alias.equals("a") || result.get(result.size() - 1).t1Alias.equals("a"));
 	}
 }
