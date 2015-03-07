@@ -202,7 +202,24 @@ public class JoinOptimizer {
             }
             els = newels;
         }
-
+        
+        /*
+        System.out.println("JoinOptimizer.enumerateSubsets.size: "+size);
+        System.out.print("JoinOptimizer.enumerateSubsets.v: ");
+        for(int i=0;i<v.size();i++){
+        	System.out.print(v.get(i)+" ");
+        }
+        System.out.println();
+        System.out.print("JoinOptimizer.enumerateSubsets.els: ");
+        for(Iterator<Set<T>> iter=els.iterator();iter.hasNext();){
+        	Set<T> n = (Set<T>)iter.next();
+        	for(Iterator<T> iter2=n.iterator();iter2.hasNext();){
+        		Object n2 = iter2.next();
+        		System.out.print(n2.toString()+" ");
+        	}
+        	System.out.println();
+        }*/
+        
         return els;
 
     }
@@ -237,7 +254,35 @@ public class JoinOptimizer {
 
         // some code goes here
         //Replace the following
-        return joins;
+        //return joins;
+    	
+    	//System.out.println("JoinOptimizer.orderJoins.joins.size: "+joins.size());
+    	
+    	PlanCache pc=new PlanCache();
+    	Set<LogicalJoinNode> joinsSet=new HashSet<LogicalJoinNode>();
+    	
+    	for(int i=1; i<=joins.size();i++){
+    		for(Set<LogicalJoinNode> s:enumerateSubsets(joins,i)){ //each subset with size i
+    			if(i==joins.size()) //should be true only once
+    				joinsSet=s;
+    				
+    			double bestCostSoFar=Double.MAX_VALUE;
+    			
+    			for(LogicalJoinNode ljn:s){
+    				CostCard cd=computeCostAndCardOfSubplan(stats,filterSelectivities,
+    						ljn,s,bestCostSoFar,pc);
+    				if(cd!=null){
+    					bestCostSoFar=cd.cost;
+    					pc.addPlan(s, cd.cost, cd.card, cd.plan); //best plan for each subset
+    				}
+    			}
+    			
+    		}
+    	}
+    	
+    	if(explain)
+    		printJoins(pc.getOrder(joinsSet),pc,stats,filterSelectivities);
+    	return pc.getOrder(joinsSet);
     }
 
     // ===================== Private Methods =================================
