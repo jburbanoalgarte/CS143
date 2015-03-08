@@ -50,7 +50,7 @@ public class HeapPageId implements PageId {
         //throw new UnsupportedOperationException("implement this");
     	
 		String tidString = Integer.toString( this.getTableId() );
-		String tidStringShort = tidString.substring(tidString.length()/2, tidString.length());
+		String tidStringShort = tidString.substring((tidString.length()+1)/2, tidString.length());
 		String pgNoString = Integer.toString( this.pageNumber() );
 		String concat =  pgNoString + tidStringShort;
 		return Integer.parseInt( concat );
