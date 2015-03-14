@@ -13,23 +13,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class TableStats {
 
-	// need:
-	// numPages
-	private int tableid; // done
 	
-	// ioCostPerPage
-	private int ioCostPerPage; // done
-	
-	// numTuples
-	private int numTuples = 0; // done
-	
+	private int tableid;	
+	private int ioCostPerPage;
+	private int numTuples = 0;
 	// int or string histogram for each field
-	// IntHistogram(int buckets, int min, int max)
-	// StringHistogram(int buckets)
-	// addValue(int v)
-	// addValue(String s)
-	private HashMap<String, IntHistogram> intHistograms; // done
-	private HashMap<String, StringHistogram> stringHistograms; // done
+	private HashMap<String, IntHistogram> intHistograms;
+	private HashMap<String, StringHistogram> stringHistograms;
 
     private static final ConcurrentHashMap<String, TableStats> statsMap = new ConcurrentHashMap<String, TableStats>();
 
